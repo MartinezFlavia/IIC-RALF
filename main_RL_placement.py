@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # ========================================================================
 #
 #   Script to generate the placement of a circuit, by using reinforcement learning.
@@ -19,6 +20,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # ========================================================================
 
+import sys
 import faulthandler
 faulthandler.enable()
 
@@ -59,7 +61,10 @@ def main():
         logging.basicConfig(handlers=[logHandler], level=logging.DEBUG, format="[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)d] %(message)s")
     
     # Get user input or use default values
-    circuit_file_name = input(f"Enter the circuit file name (default: {DEFAULT_CIRCUIT_NAME}): ") or DEFAULT_CIRCUIT_NAME
+    if len(sys.argv) <= 1:
+        circuit_file_name = input(f"Enter the circuit file name (default: {DEFAULT_CIRCUIT_NAME}): ") or DEFAULT_CIRCUIT_NAME
+    else:
+        circuit_file_name = sys.argv[1]
     circuit_file = f"Circuits/Examples/{circuit_file_name}.spice"
     circuit_name = input(f"Enter the circuit name (default: {DEFAULT_CIRCUIT_NAME}): ") or DEFAULT_CIRCUIT_NAME
     net_rules_file_name = input(f"Enter the net rules file name (default: net_rules_{DEFAULT_CIRCUIT_NAME}): ") or f"net_rules_{DEFAULT_CIRCUIT_NAME}"
