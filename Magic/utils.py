@@ -81,10 +81,12 @@ def instantiate_devices(Circuit : Circuit, path = 'Magic/Devices', del_path = Tr
     logger.info(f"Instantiating devices of {Circuit} in magic. Devices-path: {path}")
     
     #get the device generation commands
-    mag = Magic(Circuit)
+    mag = Magic(Circuit, path)
     lines = mag.gen_devices()
 
     #if devices folder exists delete it
+    # NOTE:  This is *highly* dangerous;  try setting path to your home directory. . .
+    # Instead, just remove .mag files from the path.
     if os.path.exists(path) and del_path:
         shutil.rmtree(path)
 
@@ -92,22 +94,31 @@ def instantiate_devices(Circuit : Circuit, path = 'Magic/Devices', del_path = Tr
     if not os.path.exists(path):
         os.makedirs(path)
 
-    #write a tcl script to generate the devices
-    file = open(path+'/init_devs.tcl', 'w')
-    for l in lines:
-        file.write(l+'\n')
-    file.close()
+    # Test:  Apply commands directly to the running magic process
 
-    #let magic generate the devices
-    # check if the variable PDKPATH is set
-    if "PDKPATH" in os.environ:
-        #save the actual directory
-        act_dir = os.getcwd()
-        os.chdir(path)
-        os.system('magic -dnull -noconsole -rcfile ${PDKPATH}/libs.tech/magic/sky130A.magicrc "init_devs.tcl" > /dev/null')
-        os.chdir(act_dir)
-    else:
-        raise KeyError(f"[ERROR] Variable PDKPATH not set!")
+    # #write a tcl script to generate the devices
+    # file = open(path+'/init_devs.tcl', 'w')
+    # for l in lines:
+    #     file.write(l+'\n')
+    # file.close()
+
+    mag.magic_command(lines)
+
+    # #let magic generate the devices
+    # # check if the variable PDKPATH is set
+    # if "PDKPATH" in os.environ:
+    #     #save the actual directory
+    #     act_dir = os.getcwd()
+    #     os.chdir(path)
+    #     os.system('magic -dnull -noconsole -rcfile ${PDKPATH}/libs.tech/magic/sky130A.magicrc "init_devs.tcl" > /dev/null')
+    #     os.chdir(act_dir)
+    # elif "PDK_ROOT" in os.environ and "PDK" in os.environ:
+    #     act_dir = os.getcwd()
+    #     os.chdir(path)
+    #     os.system('magic -dnull -noconsole -rcfile ${PDK_ROOT}/${PDK}/libs.tech/magic/${PDK}.magicrc "init_devs.tcl" > /dev/null')
+    #     os.chdir(act_dir)
+    # else:
+    #     raise KeyError(f"[ERROR] Variable PDKPATH not set!")
     
     #if the circuit has already a cell view, update the paths
     for device in Circuit.devices.values():
