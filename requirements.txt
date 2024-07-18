@@ -10,3 +10,4 @@ simanneal==0.5.0
 torch==2.0.1
 torch_geometric==2.3.1
 tqdm==4.65.0
+pexpect==4.9.0

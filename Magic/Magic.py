@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 
 from SchematicCapture.Devices import SubDevice, PrimitiveDevice
 
-import subprocess
+import pexpect
 import os
 
 class Magic:
@@ -49,7 +49,8 @@ class Magic:
 
         # Assume "magic" is in the standard execution path.
 
-        magiccmd = ['magic', '-dnull', '-noconsole']
+        magiccmd = 'magic'
+        magicargs = ['-dnull', '-noconsole']
 
         # Run with the startup file for the PDK.  Get the PDK from the
         # environment, usually PDK_ROOT and PDK, or else PDK_PATH, or else
@@ -76,8 +77,8 @@ class Magic:
         else:
             raise KeyError(f"[ERROR] PDK unknown: Variable PDK_ROOT and PDK not set!")
 
-        magiccmd.append('-rcfile')
-        magiccmd.append(rcfilepath)
+        magicargs.append('-rcfile')
+        magicargs.append(rcfilepath)
 
         # If path was specified, then the magic process is run from that path.
         # Otherwise, run from the current working directory.
@@ -85,11 +86,19 @@ class Magic:
         if not path:
             path = os.getcwd()
 
-        self._process = subprocess.Popen(magiccmd,
-		stdin=subprocess.PIPE,
-		stdout=subprocess.PIPE,
+        self._process = pexpect.spawn(magiccmd, magicargs,
                 cwd = path,
 		env=my_env)
+
+    def __del__(self):
+        """
+            Class destructor
+        """
+        # Attempt to exit magic somewhat gracefully with a "quit" command
+        magicproc = self._process
+        if magicproc != None:
+            # Close the running magic process
+            magicproc.close(force=True)
 
     def close(self):
         """
@@ -97,13 +106,14 @@ class Magic:
         """
         # Pass the "quit -noprompt" command to magic, then close out the process.
         magicproc = self._process
-        magicproc.stdin.write("quit -noprompt\n") 
-        # Ignore any remaining output
-        magicproc.stdout.close()
-        return_code = magicproc.wait()
-        if return_code != 0:
-            raise subprocess.CalledProcessError(return_code, "magic")
-        self._process = None
+        if magicproc:
+            self.magic_command("quit -noprompt\n") 
+            # Ignore any remaining output
+            magicproc.wait()
+            return_code = magicproc.exitstatus
+            self._process = None
+            if return_code != 0:
+                print('Error:  Magic process returned exit code ' + return_code)
         
     def magic_command(self, command):
         """
@@ -111,20 +121,18 @@ class Magic:
             magic and capture and return the result.
         """
         magicproc = self._process
+        if not magicproc:
+            return None
 
-        # Check if "command" is a list;  if so, process each entry.
-        # Otherwise, treat as a string.
+        # Check if "command" is a list
 
         if isinstance(command, list):
-            for line in command:
-                magicproc.stdin.write(bytes(line + "\n", "ascii"))
+            magicproc.writelines(command)
         else:
-            for line in command.splitlines():
-                magicproc.stdin.write(line + "\n")
+            magicproc.send(command)
 
-        maglines = magicproc.communicate()[0]
+        maglines = magicproc.read_nonblocking(timeout=1)
         return maglines
-
         
     @staticmethod
     def gen_sky130_fd_pr__nfet_01v8(d : MOS) -> str:
