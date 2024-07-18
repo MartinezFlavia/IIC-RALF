@@ -37,7 +37,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def instantiate_circuit(Circuit : Circuit, path='Magic/Devices'):
+def instantiate_circuit(Circuit : Circuit, mag : Magic, path='Magic/Devices'):
     """Instantiate the devices of the given circuit, and all its possible
      sub-circuits in magic.
 
@@ -55,25 +55,31 @@ def instantiate_circuit(Circuit : Circuit, path='Magic/Devices'):
 
     logger.debug(f"Instantiation topology: {topology}")
 
-    #if Devices folder exists delete it
-    if os.path.exists(path):
-        shutil.rmtree(path)
-
-    #make the Devices folder
+    #make the Devices folder if it doesn't exist
     if not os.path.exists(path):
         os.makedirs(path)
+
+    # Find the absolute path to "path" and move to it in the layout editor
+    # Then remove any existing layout files in that directory.
+
+    cwdpath = os.getcwd()
+    abspath = os.path.join(cwdpath, path)
+    if mag:
+        mag.magic_command('cd ' + abspath)
+        mag.magic_command('foreach fname [glob *.mag] {file delete $fname}')
 
     #for each circuit instantiate the devices
     for (t, c) in topology:
         print('Diagnostic:  instantiating devices.')
-        instantiate_devices(c, path, del_path=False)
+        instantiate_devices(c, mag, path, del_path=False)
         logger.debug(f"Instantiated devices of {c} at topological layer {t}.")
 
-def instantiate_devices(Circuit : Circuit, path = 'Magic/Devices', del_path = True):
+def instantiate_devices(Circuit : Circuit, mag : Magic, path = 'Magic/Devices', del_path = True):
     """Instantiate the devices of a circuit. (Without the devices of possible sub-circuits.)
 
     Args:
         Circuit (Circuit): Circuit which shall be instantiated in magic.
+        mag (Magic): Process for sending and receiving magic commands and responses
         path (str, optional): Path where the resulting files, will be saved. Defaults to 'Magic/Devices'.
                             The files will be stored under:
                                 <working_dir>/<path>
@@ -82,7 +88,6 @@ def instantiate_devices(Circuit : Circuit, path = 'Magic/Devices', del_path = Tr
     logger.info(f"Instantiating devices of {Circuit} in magic. Devices-path: {path}")
     
     #get the device generation commands
-    mag = Magic(Circuit, path)
     lines = mag.gen_devices()
 
     #if devices folder exists delete it
@@ -162,11 +167,12 @@ def generate_cell(name : str, path='Magic/Devices') -> Cell:
 
     return cell 
 
-def add_cells(circ : Circuit, path='Magic/Devices'):
+def add_cells(circ : Circuit, mag : Magic, path='Magic/Devices'):
     """Add a cell-view to the circuit.
 
     Args:
         circ (Circuit): Circuit whose cell-view shall be generated.
+        mag (Magic): Process for communicating with magic
         path (str, optional): Path to the magic-view of the devices. Defaults to 'Magic/Devices'.
     """
 
@@ -185,35 +191,40 @@ def add_cells(circ : Circuit, path='Magic/Devices'):
         print(f"Generating new view under '{path}'!")
         # NOTE: instantiate_circuit MUST generate the layout or else the recursive call to add_cells
         # will be an infinite loop.
-        instantiate_circuit(circ, path)
-        add_cells(circ=circ, path=path)
+        instantiate_circuit(circ, mag, path)
+        add_cells(circ=circ, mag=mag, path=path)
     except:
         print(f"Adding cells to {circ} failed!")
         sys.exit(1)
                 
 
-def place_circuit(name : str, Circuit : Circuit, path = 'Magic/Placement', debug=False, clean_path=True):
+def place_circuit(name : str, Circuit : Circuit, mag : Magic, path = 'Magic/Placement', debug=False, clean_path=True):
     """Place the devices of circuit <Circuit> in magic.
 
     Args:
         name (str): Name of the top-cell.
         Circuit (Circuit): Circuit which shall be placed.
+        mag (Magic): Magic process for sending commands and receiving responses
         path (str, optional): Path to the resulting top-cell. Defaults to 'Magic/Placement'.
         debug (bool, optional): If True, only the tcl script will be generated, but not executed. Defaults to False.
         clean_path (bool, optional): If True, the content at <path> will be deleted, before stating the placement. Defaults to True.
     """
 
     #generate the commands to place the circuit
-    mag = Magic(Circuit, path)
     lines = mag.place_circuit(name, path="")
-
-    #if Placement folder exists delete it (bad, bad, bad. . .)
-    if os.path.exists(path) and clean_path:
-        shutil.rmtree(path)
 
     #make the Placement folder
     if not os.path.exists(path):
         os.makedirs(path)
+
+    # Find the absolute path to "path" and move to it in the layout editor
+    # Then remove any existing layout files in that directory.
+
+    cwdpath = os.getcwd()
+    abspath = os.path.join(cwdpath, path)
+    if mag:
+        mag.magic_command('cd ' + abspath)
+        mag.magic_command('foreach fname [glob *.mag] {file delete $fname}')
 
     #write the tcl script to generate the Placement
     # file = open(path+'/place_devs.tcl', 'w')
@@ -237,7 +248,7 @@ def place_circuit(name : str, Circuit : Circuit, path = 'Magic/Placement', debug
     mag.magic_command(lines)
         
     
-def place_circuit_hierachical(name : str, circuit : Circuit, path = "Magic/Placement", clean_path = True):
+def place_circuit_hierachical(name : str, circuit : Circuit, mag : Magic, path = "Magic/Placement", clean_path = True):
     """Do the placement of a circuit hierarchical.
 
         WARNING: Hierarchical placement can lead to errors, since 
@@ -273,9 +284,9 @@ def place_circuit_hierachical(name : str, circuit : Circuit, path = "Magic/Place
             macro_cell.rotate_center(-macro_cell.rotation)
             macro_cell._move_cells_to_bound()
             #place the subcircuit
-            place_circuit(sub_device.name, circ_c, path=path, clean_path=False)
+            place_circuit(sub_device.name, circ_c, mag, path=path, clean_path=False)
 
             circ.sub_device.cell.add_path(os.path.realpath(f'{path}'))
         else:
-            place_circuit(name, circ, path=path, clean_path=False)
+            place_circuit(name, circ, mag, path=path, clean_path=False)
 

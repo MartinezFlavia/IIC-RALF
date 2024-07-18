@@ -63,8 +63,6 @@ class Circuit:
         self._nets = {}
         # save the topological layer
         self._topology_layer = topology_layer
-        # set up a process, to pipe input and output to and from magic
-        self._process = None
         # instantiate the devices
         self._instantiate_devices()
         # instantiate the nets, which connect the devices

@@ -29,6 +29,7 @@ from Magic.utils import instantiate_circuit, add_cells
 from Environment.utils import do_bottom_up_placement
 from SchematicCapture.RString import include_RStrings_hierarchical
 from Magic.MagicDie import MagicDie
+from Magic.Magic import Magic
 import pickle
 
 import logging
@@ -71,9 +72,12 @@ def main():
     net_rules_file = f"NetRules/{net_rules_file_name}.json"
 
     print("Setting up the circuit...")
-    # Setup the circuit
+    # Set up the process to communicate with magic
+    M = Magic(None)
+    # Set up the circuit
     C = setup_circuit(circuit_file, circuit_name, [], net_rules_file=net_rules_file)
     print(f"Circuit setup completed: {C}")
+    M.set_circuit(C)
 
     print("Including primitive compositions into the circuit...")
     # Include primitive compositions into the circuit
@@ -84,12 +88,12 @@ def main():
     # Instantiate the circuit cells in magic
     if INSTANTIATE_CELLS_IN_MAGIC:
         print("Instantiating the circuit cells in Magic...")
-        instantiate_circuit(C, "Magic/Devices")
+        instantiate_circuit(C, M, "Magic/Devices")
         print("Circuit cells instantiated in Magic.")
 
     print("Adding cells to the devices...")
     # Add the cells to the devices
-    add_cells(C, "Magic/Devices")
+    add_cells(C, M, "Magic/Devices")
     print("Cells added to the devices.")
 
     print("Defining a die for the circuit...")

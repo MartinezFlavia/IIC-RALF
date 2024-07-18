@@ -41,78 +41,94 @@ class Magic:
             circuit (Circuit): Circuit for which commands shall be generated.
         """
         self._circuit = circuit
+        self._process = None
 
-        if circuit._process == None:
+        # Create a subprocess for communication with magic.  This allows a
+        # circuit to be created within magic's database, and queries can
+        # be made on the circuit and its components without re-running
+        # magic each time.
 
-            # Create a subprocess for communication with magic.  This allows a
-            # circuit to be created within magic's database, and queries can
-            # be made on the circuit and its components without re-running
-            # magic each time.
+        # Assume "magic" is in the standard execution path.
 
-            # Assume "magic" is in the standard execution path.
+        magiccmd = 'magic'
+        magicargs = ['-dnull', '-noconsole']
 
-            magiccmd = 'magic'
-            magicargs = ['-dnull', '-noconsole']
+        # Run with the startup file for the PDK.  Get the PDK from the
+        # environment, usually PDK_ROOT and PDK, or else PDK_PATH, or else
+        # PDKPATH.  To do:  Set up the PDK when starting RALF and pass the
+        # information to this routine directly, not through the environment.
+        # Ultimately, the PDK is determined by the input schematic or
+        # netlist and is not selectable.
 
-            # Run with the startup file for the PDK.  Get the PDK from the
-            # environment, usually PDK_ROOT and PDK, or else PDK_PATH, or else
-            # PDKPATH.  To do:  Set up the PDK when starting RALF and pass the
-            # information to this routine directly, not through the environment.
-            # Ultimately, the PDK is determined by the input schematic or
-            # netlist and is not selectable.
-
-            my_env = os.environ.copy()
-            if "PDK_ROOT" in my_env and "PDK" in my_env:
-                pdkroot = my_env["PDK_ROOT"]
-                pdkname = my_env["PDK"]
-                pdkpath = os.path.join(pdkroot, pdkname)
-                rcfilepath = os.path.join(pdkpath, "libs.tech", "magic", pdkname + ".magicrc")
+        my_env = os.environ.copy()
+        if "PDK_ROOT" in my_env and "PDK" in my_env:
+            pdkroot = my_env["PDK_ROOT"]
+            pdkname = my_env["PDK"]
+            pdkpath = os.path.join(pdkroot, pdkname)
+            rcfilepath = os.path.join(pdkpath, "libs.tech", "magic", pdkname + ".magicrc")
                 
-            elif "PDK_PATH" in my_env:
-                pdkpath = my_env["PDK_PATH"]
-                pdkname = os.path.split(pdkpath)[1]
-                rcfilepath = os.path.join(pdkpath, "libs.tech", "magic", pdkname + ".magicrc")
-            elif "PDKPATH" in my_env:
-                pdkpath = my_env["PDKPATH"]
-                pdkname = os.path.split(pdkpath)[1]
-                rcfilepath = os.path.join(pdkpath, "libs.tech", "magic", pdkname + ".magicrc")
-            else:
-                raise KeyError(f"[ERROR] PDK unknown: Variable PDK_ROOT and PDK not set!")
+        elif "PDK_PATH" in my_env:
+            pdkpath = my_env["PDK_PATH"]
+            pdkname = os.path.split(pdkpath)[1]
+            rcfilepath = os.path.join(pdkpath, "libs.tech", "magic", pdkname + ".magicrc")
+        elif "PDKPATH" in my_env:
+            pdkpath = my_env["PDKPATH"]
+            pdkname = os.path.split(pdkpath)[1]
+            rcfilepath = os.path.join(pdkpath, "libs.tech", "magic", pdkname + ".magicrc")
+        else:
+            raise KeyError(f"[ERROR] PDK unknown: Variable PDK_ROOT and PDK not set!")
 
-            magicargs.append('-rcfile')
-            magicargs.append(rcfilepath)
+        magicargs.append('-rcfile')
+        magicargs.append(rcfilepath)
 
-            # If path was specified, then the magic process is run from that path.
-            # Otherwise, run from the current working directory.
+        # If path was specified, then the magic process is run from that path.
+        # Otherwise, run from the current working directory.
 
-            if not path:
-                path = os.getcwd()
+        if not path:
+            path = os.getcwd()
 
-            print('Diagnostic:  starting magic process ' + magiccmd + ' ' + ' '.join(magicargs))
-            print('Diagnostic:  process started in path ' + path)
-            circuit._process = pexpect.spawn(magiccmd, magicargs, cwd = path, env=my_env)
+        print('Diagnostic:  starting magic process ' + magiccmd + ' ' + ' '.join(magicargs))
+        print('Diagnostic:  process started in path ' + path)
+        self._process = pexpect.spawn(magiccmd, magicargs, cwd = path, env=my_env)
+
+        # Send one empty-string command to magic.  For some reason the first command gets lost,
+        # so this prevents the loss of the next command to be sent.  Have not debugged the
+        # issue, so just keeping the workaround.
+        self.magic_command('')
+
+        # Test of command/response:
+        response = self.magic_command('cellname top')
+        print('Diagnostic:  magic initial output is: ' + str(response))
 
     def close(self):
         """
             Close the running magic process
         """
         # Pass the "quit -noprompt" command to magic, then close out the process.
-        magicproc = self._circuit._process
+        magicproc = self._process
         if magicproc:
-            self.magic_command("quit -noprompt\n")
+            self.magic_command('quit -noprompt')
             # Ignore any remaining output
             magicproc.wait()
             return_code = magicproc.exitstatus
-            self._circuit._process = None
+            self._process = None
             if return_code != 0:
                 print('Error:  Magic process returned exit code ' + return_code)
         
+    def set_circuit(self, circuit : Circuit):
+        """
+            Set the circuit used by the Magic class object.  Note:  This is not really the way
+            it should be done and is an artifact of the way the code was originally set up.
+        """
+        self._circuit = circuit
+        
+
     def magic_command(self, command, expect_output=False):
         """
             Apply a Tcl command (may be a multi-line set of commands) to 
             magic and capture and return the result.
         """
-        magicproc = self._circuit._process
+        magicproc = self._process
         if not magicproc:
             return None
 
@@ -124,6 +140,8 @@ class Magic:
             for item in command:
                 magicproc.sendline(item)
         else:
+            if not command.endswith('\n'):
+                command = command + '\n'
             magicproc.send(command)
 
         if expect_output:
