@@ -51,22 +51,23 @@ class Circuit:
             name (str, optional): Name of the circuit. Defaults to ''.
         """
         self._netlist = netlist
-        #setup a graph for the circuit
+        # set up a graph for the circuit
         self._graph = nx.MultiGraph()
-        #set the name of the circuit
+        # set the name of the circuit
         self._name = name
-        #setup a dict, to store the devices of the circuit
+        # set up a dict, to store the devices of the circuit
         self._devices : dict[str, Device]
         self._devices = {}
-        #setup a dict, to store the nets of the circuit
+        # set up a dict, to store the nets of the circuit
         self._nets : dict[str, Net]
         self._nets = {}
-        #save the topological layer
+        # save the topological layer
         self._topology_layer = topology_layer
-        
-        #instantiate the devices
+        # set up a process, to pipe input and output to and from magic
+        self._process = None
+        # instantiate the devices
         self._instantiate_devices()
-        #instantiate the nets, which connect the devices
+        # instantiate the nets, which connect the devices
         self._instantiate_nets()
 
     def __eq__(self, __value: object) -> bool:

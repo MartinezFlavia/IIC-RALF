@@ -65,6 +65,7 @@ def instantiate_circuit(Circuit : Circuit, path='Magic/Devices'):
 
     #for each circuit instantiate the devices
     for (t, c) in topology:
+        print('Diagnostic:  instantiating devices.')
         instantiate_devices(c, path, del_path=False)
         logger.debug(f"Instantiated devices of {c} at topological layer {t}.")
 
@@ -182,6 +183,8 @@ def add_cells(circ : Circuit, path='Magic/Devices'):
     except FileNotFoundError:
         print(f"Magic-view can't be found!")
         print(f"Generating new view under '{path}'!")
+        # NOTE: instantiate_circuit MUST generate the layout or else the recursive call to add_cells
+        # will be an infinite loop.
         instantiate_circuit(circ, path)
         add_cells(circ=circ, path=path)
     except:
