@@ -201,10 +201,10 @@ def place_circuit(name : str, Circuit : Circuit, path = 'Magic/Placement', debug
     """
 
     #generate the commands to place the circuit
-    mag = Magic(Circuit)
-    lines = mag.place_circuit(name,path="")
+    mag = Magic(Circuit, path)
+    lines = mag.place_circuit(name, path="")
 
-    #if Placement folder exists delete it
+    #if Placement folder exists delete it (bad, bad, bad. . .)
     if os.path.exists(path) and clean_path:
         shutil.rmtree(path)
 
@@ -213,23 +213,25 @@ def place_circuit(name : str, Circuit : Circuit, path = 'Magic/Placement', debug
         os.makedirs(path)
 
     #write the tcl script to generate the Placement
-    file = open(path+'/place_devs.tcl', 'w')
-    for l in lines:
-        file.write(l+'\n')
-    file.close()
+    # file = open(path+'/place_devs.tcl', 'w')
+    # for l in lines:
+    #     file.write(l+'\n')
+    # file.close()
 
-    if not debug:
-        # check if the variable PDKPATH is set
-        if "PDKPATH" in os.environ:
-            #let magic generate the devices
-            act_dir = os.getcwd()
-            os.chdir(path)
-            os.system('magic -dnull -noconsole -rcfile ${PDKPATH}/libs.tech/magic/sky130A.magicrc "place_devs.tcl" > /dev/null')
-            #delete the tcl script
-            os.remove("place_devs.tcl")
-            os.chdir(act_dir)
-        else:
-            raise KeyError(f"[ERROR] Variable PDKPATH not set!")
+    # if not debug:
+    #     # check if the variable PDKPATH is set
+    #     if "PDKPATH" in os.environ:
+    #         #let magic generate the devices
+    #         act_dir = os.getcwd()
+    #         os.chdir(path)
+    #         os.system('magic -dnull -noconsole -rcfile ${PDKPATH}/libs.tech/magic/sky130A.magicrc "place_devs.tcl" > /dev/null')
+    #         #delete the tcl script
+    #         os.remove("place_devs.tcl")
+    #         os.chdir(act_dir)
+    #     else:
+    #         raise KeyError(f"[ERROR] Variable PDKPATH not set!")
+
+    mag.magic_command(lines)
         
     
 def place_circuit_hierachical(name : str, circuit : Circuit, path = "Magic/Placement", clean_path = True):
