@@ -576,14 +576,18 @@ class Magic:
         """
         commands = []
         
-        for (d_name, d) in self._circuit.devices.items():
+        circ = self._circuit
+
+        for (d_name, d) in circ.devices.items():
             if type(d) != SubDevice:
-                commands.append(f"load {d_name} -silent -quiet")
-                commands.append("box 0 0 0 0")
-                commands.append(Magic.magic_gen_device(d))
-                commands.append(f"save {d_name}")
-        
+                instname = d.name
+                modelname = d.model
+                print('Diagnostic:  Device instance = ' + str(instname) + '; Device model = ' + str(modelname))
+                commands.append(f"magic::gencell ${{PDKNAMESPACE}}::{modelname} {instname}")
+                # commands.append(f"load {d_name} -silent -quiet")
+                # commands.append("box 0 0 0 0")
+                # commands.append(Magic.magic_gen_device(d))
+                # commands.append(f"save {d_name}")
             
         return commands
     
-         
