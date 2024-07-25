@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # ========================================================================
 #
 #   Script to place a already placed circuit in Magic.
@@ -26,6 +27,7 @@ if TYPE_CHECKING:
 
 import pickle
 from Magic.utils import place_circuit, instantiate_circuit
+from Magic.Magic import Magic
 import os
 
 ###########################################################################
@@ -41,14 +43,17 @@ die : MagicDie
 die = pickle.load(file)
 file.close()
 
+#start magic as a batch process
+M = Magic(None)
+ 
 #get the placed circuit
 circuit = die.circuit
 
 #instantiate the circuit-devices in Magic
-instantiate_circuit(circuit, path='Magic/Devices')
+instantiate_circuit(circuit, M, path='Magic/Devices')
 
 #place the circuit
-place_circuit(CIRCUIT_NAME, circuit, debug=False)
+place_circuit(CIRCUIT_NAME, circuit, M, debug=False)
 
 if START_MAGIC:
     os.system(f'magic Magic/Placement/{CIRCUIT_NAME}.mag')

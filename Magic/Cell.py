@@ -149,6 +149,15 @@ class Cell:
         return self._center_point
     
     @property
+    def name(self) -> int:
+        """Name of the cell.
+
+        Returns:
+            str: Name of the cell.
+        """
+        return self._name
+    
+    @property
     def rotation(self) -> int:
         """Rotation of the cell.
 

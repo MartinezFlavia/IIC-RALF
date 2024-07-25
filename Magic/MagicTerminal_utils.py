@@ -69,7 +69,11 @@ def get_terminals_MOS(cell : Cell) -> MagicTerminal:
     gate_rects = cell.get_overlapping_rectangles('polycont', 'poly')
     gate_rects = merge_rects2(gate_rects)
     
-    assert len(gate_rects) == device.parameters['nf'], "Number of devices gates, and found gates don't match!"
+    print('get_terminals_MOS:  Diagnostic: device name is ' + cell.name)
+    print('get_terminals_MOS:  Diagnostic: device parameters are ' + str(device.parameters))
+    print('get_terminals_MOS:  Diagnostic: device cell parameters are ' + str(device.cell_parameters))
+    print('get_terminals_MOS:  Diagnostic: gate_rects = ' + str(len(gate_rects)) + '; nf = ' + str(device.parameters['nf']))
+    assert len(gate_rects) == device.parameters['nf'], "Number of devices gates and found gates don't match!"
     
     #if rot ==0 or rot == 180:
     #    gate_rects = merge_rects(gate_rects, direction=1)
@@ -327,10 +331,10 @@ def get_terminals_DifferentialPair(cell : Cell) -> dict[str, MagicTerminal]:
         
     if botc==0:
         #device don't uses bottom-gate contacts
-        assert len(gate_rects)==(device.parameters['nf']), "Number of devices gates, and found gates don't match!"
+        assert len(gate_rects)==(device.parameters['nf']), "Number of devices gates, and found gates don't match (botc=0)!"
     else:
         #device uses bottom-gate contacts
-        assert len(gate_rects)==2*(device.parameters['nf']), "Number of devices gates, and found gates don't match!"
+        assert len(gate_rects)==2*(device.parameters['nf']), "Number of devices gates, and found gates don't match (botc=1)!"
     
 
     #get the drain/source and bulk contacts
@@ -478,10 +482,10 @@ def get_terminals_DifferentialLoad(cell : Cell) -> dict[str, MagicTerminal]:
 
     if botc==0:
         #device don't uses bottom-gate contacts
-        assert len(gate_rects)==(device.parameters['nf']*2), "Number of devices gates, and found gates don't match!"
+        assert len(gate_rects)==(device.parameters['nf']*2), "Number of devices gates, and found gates don't match (botc=0!"
     else:
         #device uses bottom-gate contacts
-        assert len(gate_rects)==2*(device.parameters['nf']*2), "Number of devices gates, and found gates don't match!"
+        assert len(gate_rects)==2*(device.parameters['nf']*2), "Number of devices gates, and found gates don't match (botc=1)!"
     
     #get the drain/source and bulk rectangle
     if 'pmos' in cell._layer_stack:
@@ -654,10 +658,10 @@ def get_terminals_CrossCoupledPair(cell : Cell) -> dict[str,MagicTerminal]:
 
     if botc==0:
         #device don't uses bottom-gate contacts
-        assert len(gate_rects)==(device.parameters['nf']*2), "Number of devices gates, and found gates don't match!"
+        assert len(gate_rects)==(device.parameters['nf']*2), "Number of devices gates, and found gates don't match (boc=0)!"
     else:
         #device uses bottom-gate contacts
-        assert len(gate_rects)==2*(device.parameters['nf']*2), "Number of devices gates, and found gates don't match!"
+        assert len(gate_rects)==2*(device.parameters['nf']*2), "Number of devices gates, and found gates don't match (botc=1)!"
     
     #get the drain/source and bulk rectangles
     if 'pmos' in cell._layer_stack:

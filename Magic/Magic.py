@@ -582,6 +582,21 @@ class Magic:
             if type(d) != SubDevice:
                 instname = d.name
                 modelname = d.model
+
+                # XXX WIP XXX:  Code in MagicTerminal_utils.py counts gates by contact, not by gate.
+                # This requires that the bottom gate contact be removed.  To do:  Use calls to magic
+                # to determine the actual gate geometry.  For now:  Force the bottom gate contact to
+                # be removed by setting parameter "botc" to 0.  Also:  RALF expects only one substrate
+                # contact (another issue that needs to be fixed), so enforce this rule for now.
+                if 'botc' not in d.cell_parameters:
+                    d.cell_parameters['botc'] = 0	# Remove the bottom poly contact
+                if 'glc' not in d.cell_parameters:
+                    d.cell_parameters['glc'] = 0	# Remove the left guard ring contact
+                if 'grc' not in d.cell_parameters:
+                    d.cell_parameters['grc'] = 0	# Remove the right guard ring contact
+                if 'gtc' not in d.cell_parameters:
+                    d.cell_parameters['gtc'] = 0	# Remove the top guard ring contact
+
                 # Generate argument list from known parameters for the device, which can include
                 # the primary parameters normally found in a netlist (d.parameters), or layout-
                 # specific parameters (d.cell_parameters).  Any parameters not specified will be
