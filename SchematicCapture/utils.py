@@ -30,6 +30,7 @@ import SchematicCapture.Primitives as Primitives
 from SchematicCapture.Primitives import SUPPORTED_PRIMITIVES, PrimitiveDeviceComposition
 from Rules.utils import generate_net_rules_from_file
 
+from Magic import Magic
 
 from networkx.algorithms import isomorphism
 from collections import OrderedDict
@@ -40,7 +41,7 @@ import os
 
 logger = logging.getLogger(__name__)
 
-def setup_circuit(ngspice_netlist : str, name = "", exclude_nets : list[str] = [], net_rules_file : str = None) -> Circuit:
+def setup_circuit(ngspice_netlist : str, M : Magic, name = "", exclude_nets : list[str] = [], net_rules_file : str = None) -> Circuit:
     """Setup a circuit.
 
     Args:
@@ -66,7 +67,7 @@ def setup_circuit(ngspice_netlist : str, name = "", exclude_nets : list[str] = [
     
     #build the circuit
     logger.info(f"Building circuit.")
-    C = Circuit(N)
+    C = Circuit(N, M)
 
     #set the name of the circuit
     C.set_name(name)

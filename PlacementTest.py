@@ -48,7 +48,8 @@ placement = {
 }
 
 #setup the circuit
-C = setup_circuit(CIRCUIT_FILE, CIRCUIT_NAME, [], net_rules_file=None)
+M = Magic(None)
+C = setup_circuit(CIRCUIT_FILE, M, CIRCUIT_NAME, [], net_rules_file=None)
 
 #include primitive compositions into the circuit
 include_primitives_hierarchical(C)

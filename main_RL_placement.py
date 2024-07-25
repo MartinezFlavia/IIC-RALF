@@ -75,7 +75,7 @@ def main():
     # Set up the process to communicate with magic
     M = Magic(None)
     # Set up the circuit
-    C = setup_circuit(circuit_file, circuit_name, [], net_rules_file=net_rules_file)
+    C = setup_circuit(circuit_file, M, circuit_name, [], net_rules_file=net_rules_file)
     print(f"Circuit setup completed: {C}")
     M.set_circuit(C)
 

@@ -61,8 +61,10 @@ def main():
         logHandler.setLevel(logging.DEBUG)
         logging.basicConfig(handlers=[logHandler], level=logging.DEBUG, format="[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)d] %(message)s")
     
+    M = Magic(None)
+
     #setup the circuit
-    C = setup_circuit(CIRCUIT_FILE, CIRCUIT_NAME, [], net_rules_file=NET_RULES_FILE)
+    C = setup_circuit(CIRCUIT_FILE, M, CIRCUIT_NAME, [], net_rules_file=NET_RULES_FILE)
     
     #include primitive compositions into the circuit
     include_primitives_hierarchical(C)
@@ -70,10 +72,10 @@ def main():
 
     #instantiate the circuit cells in magic
     if INSTANTIATE_CELLS_IN_MAGIC:
-        instantiate_circuit(C,"Magic/Devices")
+        instantiate_circuit(C, M, "Magic/Devices")
 
     #add the cells to the devices
-    add_cells(C, "Magic/Devices")
+    add_cells(C, M, "Magic/Devices")
 
     #define a die for the circuit
     die = MagicDie(circuit=C, def_file=DEF_FILE)

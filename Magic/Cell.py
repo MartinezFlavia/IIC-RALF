@@ -321,7 +321,8 @@ class Cell:
                 for (k, v)  in self._terminals.items():
                     self._device.terminals[k].set_magic_terminal(v)
 
-            except:
+            except Exception as e:
+                print(f"Exception: {e}")
                 raise ValueError(f"Terminals for device {self.device.name} not implemented!")
         else:
             raise ValueError("Cell must have a device to add terminals!")

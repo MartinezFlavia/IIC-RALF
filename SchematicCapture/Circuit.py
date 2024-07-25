@@ -28,6 +28,7 @@ import networkx as nx
 
 from SchematicCapture.Devices import MOS, ThreeTermResistor, Capacitor, SubDevice, NTermDevice, SUPPORTED_DEVICES
 from SchematicCapture.Net import Net, SubNet
+from Magic import Magic
 
 import matplotlib.pyplot as plt
 import math
@@ -38,7 +39,7 @@ from collections import OrderedDict
 class Circuit:
     """Class to store a circuit.
     """
-    def __init__(self, netlist : Netlist, topology_layer=1, name=''):
+    def __init__(self, netlist : Netlist, M : Magic, topology_layer=1, name=''):
         """Setup a circuit for Netlist <netlist>.
             Only non-parametrized circuits are supported!
             Lines with .parameter will be omitted!
@@ -64,7 +65,7 @@ class Circuit:
         # save the topological layer
         self._topology_layer = topology_layer
         # instantiate the devices
-        self._instantiate_devices()
+        self._instantiate_devices(M)
         # instantiate the nets, which connect the devices
         self._instantiate_nets()
 
@@ -283,7 +284,7 @@ class Circuit:
 
         return device_map
           
-    def _instantiate_devices(self):
+    def _instantiate_devices(self, M : Magic):
         """Instantiate the devices of the circuit.
         """
         #iterate over each line in the netlist
@@ -298,6 +299,10 @@ class Circuit:
                 # set the suffix as the name of the sub-device 
                 # of the sub circuit
                 name_suffix = self.sub_device.name
+
+            # For each netlist line specifying a device, find the device model
+	    # (last token not being a parameter), and query magic for the
+	    # device class, and create the device accordingly.
 
             #generate devices
             if l.startswith("XM"): #mosfet

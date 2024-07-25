@@ -193,8 +193,9 @@ def add_cells(circ : Circuit, mag : Magic, path='Magic/Devices'):
         # will be an infinite loop.
         instantiate_circuit(circ, mag, path)
         add_cells(circ=circ, mag=mag, path=path)
-    except:
+    except Exception as e:
         print(f"Adding cells to {circ} failed!")
+        print(f"Exception: {e}")
         sys.exit(1)
                 
 

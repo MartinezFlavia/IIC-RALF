@@ -582,12 +582,33 @@ class Magic:
             if type(d) != SubDevice:
                 instname = d.name
                 modelname = d.model
+                # Generate argument list from known parameters for the device, which can include
+                # the primary parameters normally found in a netlist (d.parameters), or layout-
+                # specific parameters (d.cell_parameters).  Any parameters not specified will be
+                # taken from the PDK-defined defaults.
+                plist = []
+                for pname in d.parameters:
+                    pval = d.parameters[pname]
+                    plist.append(pname)
+                    plist.append(str(pval))
+                for pname in d.cell_parameters:
+                    pval = d.cell_parameters[pname]
+                    plist.append(pname)
+                    plist.append(str(pval))
+                pstring = '-spice ' + ' '.join(plist)
                 print('Diagnostic:  Device instance = ' + str(instname) + '; Device model = ' + str(modelname))
-                commands.append(f"magic::gencell ${{PDKNAMESPACE}}::{modelname} {instname}")
+                commands.append(f"magic::gencell ${{PDKNAMESPACE}}::{modelname} {instname} {pstring}")
                 # commands.append(f"load {d_name} -silent -quiet")
                 # commands.append("box 0 0 0 0")
                 # commands.append(Magic.magic_gen_device(d))
                 # commands.append(f"save {d_name}")
+                # XXX WIP XXX
+                # For now, mimic the original behavior by saving the device.  Note that the original behavior
+                # renames the device, which is not supported by the PDK code, so the device must be manually
+                # renamed.
+                commands.append("set oldcell [cellname list self]")
+                commands.append(f"cellname rename $oldcell {d_name}")
+                commands.append(f"writeall force {d_name}")
             
         return commands
     
