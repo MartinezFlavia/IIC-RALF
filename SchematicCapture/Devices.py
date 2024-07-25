@@ -19,13 +19,17 @@
 
 from __future__ import annotations
 
-SUPPORTED_DEVICES = {
-    "sky130_fd_pr__nfet_01v8" : 0,
-    "sky130_fd_pr__pfet_01v8" : 1,
-    "sky130_fd_pr__res_xhigh_po_0p35" : 2,
-    "sky130_fd_pr__cap_mim_m3_1" : 3,
-    "sky130_fd_pr__cap_mim_m3_2" : 4,
-    }
+# Global variable to generate indexes for devices as they are discovered
+# This should really be a class variable.
+SUPPORTED_DEVICES = {}
+
+# SUPPORTED_DEVICES = {
+#    "sky130_fd_pr__nfet_01v8" : 0,
+#    "sky130_fd_pr__pfet_01v8" : 1,
+#    "sky130_fd_pr__res_xhigh_po_0p35" : 2,
+#    "sky130_fd_pr__cap_mim_m3_1" : 3,
+#    "sky130_fd_pr__cap_mim_m3_2" : 4,
+#    }
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -566,7 +570,8 @@ class ThreeTermResistor(PrimitiveDevice):
         
         #check if the model of the device is supported
         if self._spice_splitted[4] not in SUPPORTED_DEVICES:
-            raise ValueError(f"Device {self._spice_splitted[0]} of type {self._spice_splitted[4]} not supported!")
+             SUPPORTED_DEVICES[self._spice_splitted[4]] = len(SUPPORTED_DEVICES)
+        #    raise ValueError(f"Device {self._spice_splitted[0]} of type {self._spice_splitted[4]} not supported!")
 
         #set the model of the device
         self._model = self._spice_splitted[4]
@@ -632,7 +637,8 @@ class Capacitor(PrimitiveDevice):
 
         #check if the model is supported
         if self._spice_splitted[3] not in SUPPORTED_DEVICES:
-            raise ValueError(f"Device {self._spice_splitted[0]} of type {self._spice_splitted[3]} not supported!")
+            SUPPORTED_DEVICES[self._spice_splitted[3]] = len(SUPPORTED_DEVICES)
+            # raise ValueError(f"Device {self._spice_splitted[0]} of type {self._spice_splitted[3]} not supported!")
         
         #set the model
         self._model = self._spice_splitted[3]
@@ -716,7 +722,8 @@ class MOS(PrimitiveDevice):
         
         #check if the model is supported
         if self._spice_splitted[5] not in SUPPORTED_DEVICES:
-            raise ValueError(f"Device {self._spice_splitted[0]} of type {self._spice_splitted[5]} not supported!")
+             SUPPORTED_DEVICES[self._spice_splitted[5]] = len(SUPPORTED_DEVICES)
+        #    raise ValueError(f"Device {self._spice_splitted[0]} of type {self._spice_splitted[5]} not supported!")
         
         #set the model
         self._model = self._spice_splitted[5]
@@ -788,7 +795,7 @@ class SubDevice(NTermDevice):
         self._circuit = None 
 
         #add features - a sub-device has no "real" features
-        self.add_feature("model", -1)
+        self.add_feature("model", None)
         self.add_feature("L", 0)
         self.add_feature("W", 0)
         self.add_feature("m", 0)
