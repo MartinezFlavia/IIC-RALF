@@ -214,7 +214,7 @@ def edge_match(e1, e2) -> bool:
     """
     return e1[0]["Terminal"] == e2[0]["Terminal"]
 
-def get_primitives(circ : Circuit) -> dict[str, list[PrimitiveDeviceComposition]]:
+def get_primitives(circ : Circuit, M : Magic) -> dict[str, list[PrimitiveDeviceComposition]]:
     """Get all supported primitives found in circuit <circ>.
 
     Args:
@@ -232,7 +232,7 @@ def get_primitives(circ : Circuit) -> dict[str, list[PrimitiveDeviceComposition]
         for file in os.listdir(path):
             if file.endswith('.spice'):
                 #setup the circuit of the template primitive device composition
-                primitive_circuit = setup_circuit(path+file, prim)
+                primitive_circuit = setup_circuit(path+file, M, prim)
 
                 #get the graphs
                 G1 = circ.get_bipartite_graph()
@@ -274,7 +274,7 @@ def get_primitives(circ : Circuit) -> dict[str, list[PrimitiveDeviceComposition]
 
     return primitives
 
-def include_primitives_hierarchical(circ : Circuit):
+def include_primitives_hierarchical(circ : Circuit, M : Magic):
     """Finds and includes primitive device compositions into a hierarchical circuit.
 
     Args:
@@ -287,7 +287,7 @@ def include_primitives_hierarchical(circ : Circuit):
     for (t, circ) in topology:
         #find primitive device compositions for each circuit
         #and include them into the circuit
-        primitives = get_primitives(circ)
+        primitives = get_primitives(circ, M)
         circ.include_primitives(primitives)
 
 def get_all_primitive_devices(circuit : Circuit) -> list[PrimitiveDevice]:

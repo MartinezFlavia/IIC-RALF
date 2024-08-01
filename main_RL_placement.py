@@ -81,8 +81,8 @@ def main():
 
     print("Including primitive compositions into the circuit...")
     # Include primitive compositions into the circuit
-    include_primitives_hierarchical(C)
-    include_RStrings_hierarchical(C)
+    include_primitives_hierarchical(C, M)
+    include_RStrings_hierarchical(C, M)
     print("Primitive compositions included.")
 
     # Instantiate the circuit cells in magic

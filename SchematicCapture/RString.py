@@ -32,6 +32,8 @@ import Rules.PlacementRules as PlacementRules
 from SchematicCapture.Ports import Pin
 import itertools
 
+from Magic import Magic
+
 from SchematicCapture.utils import setup_circuit, get_bottom_up_topology
 
 import networkx as nx
@@ -43,7 +45,7 @@ RSTRING_PATHS = ["Circuits/Primitives/RString/RString1.spice",
               "Circuits/Primitives/RString/RString4.spice"]
 
 
-def include_RStrings_hierarchical(circ : Circuit):
+def include_RStrings_hierarchical(circ : Circuit, M : Magic):
     """Finds and includes RStrings into a hierarchical circuit.
 
     Args:
@@ -56,7 +58,7 @@ def include_RStrings_hierarchical(circ : Circuit):
     for (t, circ) in topology:
         #find RStrings for each circuit
         #and include them into the circuit
-        rStrings = get_RStrings(circ, exclude_nets=[])
+        rStrings = get_RStrings(circ, M, exclude_nets=[])
         circ.include_primitives(rStrings)
 
 def node_match(n1, n2) -> bool:
@@ -97,7 +99,7 @@ def edge_match(e1, e2) -> bool:
     """
     return e1[0]["Terminal"] == e2[0]["Terminal"]
 
-def get_RStrings(circ : Circuit, exclude_nets : list[Net]= []) -> dict[str, list[RString]]:
+def get_RStrings(circ : Circuit, M : Magic, exclude_nets : list[Net]= []) -> dict[str, list[RString]]:
     """Find all RStrings in the circuit and make RString devices out of them.
 
     Args:
@@ -114,7 +116,7 @@ def get_RStrings(circ : Circuit, exclude_nets : list[Net]= []) -> dict[str, list
     for path in RSTRING_PATHS:
         
         #setup a primitive circuit for the RString
-        primitive_circuit = setup_circuit(path, "RString", [], net_rules_file=None)
+        primitive_circuit = setup_circuit(path, M, "RString", [], net_rules_file=None)
         
         #get the graphs
         G1 = circ.get_bipartite_graph(exclude_nets=exclude_nets)

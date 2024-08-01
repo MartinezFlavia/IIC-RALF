@@ -300,18 +300,95 @@ class Circuit:
                 # of the sub circuit
                 name_suffix = self.sub_device.name
 
+            # Tokenize the device line up to the first line containing a
+            # brace, equal sign, or quote;  this avoids having to carefully
+            # parse parameters.
+
+            tokens = l.split()
+            pchars = '{}="' + "'"
+            for idx in range(0, len(tokens)):
+                t = tokens[idx]
+                if any(item in pchars for item in t):
+                    tokens = tokens[0:idx]
+                    break
+
+            model = tokens[-1]
+            instance = tokens[0]
+
+            modelchar = instance.upper()[0]
+            classname = None
+            if modelchar == 'X':
+                # First query magic to find if the device model has a parameter
+                # named "classname" that would indicate the class of device.
+
+                devdefs = M.magic_command('${PDKNAMESPACE}::' + model + '_defaults', True)
+
+                # print('Diagnostic: devdefs is "' + devdefs + '"')
+
+                tokens = devdefs.split()
+                classname = 'subckt'
+                for key, value in zip(tokens[::2], tokens[1::2]):
+                    if key == 'class':
+                        classname = value
+                        break
+            elif modelchar == 'M':
+                classname = 'mosfet'
+            elif modelchar == 'D':
+                classname = 'diode'
+            elif modelchar == 'C':
+                classname = 'capacitor'
+            elif modelchar == 'R':
+                classname = 'resistor'
+            elif modelchar == 'L':
+                classname = 'inductor'
+            elif modelchar == 'Q':
+                classname = 'bjt'
+            else:
+                print('Diagnostic:  fall-back on classname None')
+                print('    Line is: ' + l)
+                print('    instance is: ' + instance)
+                print('    model is: ' + model)
+                print('    modelchar is: ' + modelchar)
+                
+            if classname == None and modelchar == 'X':
+                # Fall back on method of checking the 2nd character of the
+                # instance name
+                modelchar = model.upper()[1]
+                if modelchar == 'M':
+                    classname = 'mosfet'
+                elif modelchar == 'D':
+                    classname = 'diode'
+                elif modelchar == 'C':
+                    classname = 'capacitor'
+                elif modelchar == 'R':
+                    classname = 'resistor'
+                elif modelchar == 'L':
+                    classname = 'inductor'
+                elif modelchar == 'Q':
+                    classname = 'bjt'
+                else:
+                    classname = 'subckt'
+
             # For each netlist line specifying a device, find the device model
 	    # (last token not being a parameter), and query magic for the
 	    # device class, and create the device accordingly.
 
+            print('Diagnostic:  classname is ' + str(classname))
+
             #generate devices
-            if l.startswith("XM"): #mosfet
+            if classname == 'mosfet':
                 device = MOS(l, name_suffix=name_suffix)
-            elif l.startswith("XR"): #resistor
+            elif classname == 'resistor':
                 device = ThreeTermResistor(l, name_suffix=name_suffix)
-            elif l.startswith("XC"): #capacitor
+            elif classname == 'capacitor':
                 device = Capacitor(l, name_suffix=name_suffix)
-            elif l.startswith("x"): #sub-device
+            elif classname == 'diode':
+                device = Diode(l, name_suffix=name_suffix)
+            elif classname == 'inductor':
+                device = Inductor(l, name_suffix=name_suffix)
+            elif classname == 'bjt':
+                device = Bipolar(l, name_suffix=name_suffix)
+            elif classname == 'subckt':
                 #get the model of the sub-device
                 device_model = SubDevice.get_model(l)
 

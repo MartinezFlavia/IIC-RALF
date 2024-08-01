@@ -693,6 +693,78 @@ class Capacitor(PrimitiveDevice):
             obstacle_rule = ObstacleRule(cell=self.cell, layer=global_pdk.get_layer("m4"))
         
         return [obstacle_rule]
+
+class Diode(PrimitiveDevice):
+    """ Class to store a diode
+        ```
+                  A
+                  |
+                  |
+                -----
+                \   /
+                 \ /
+                --+--
+                  |
+                  |
+                  C
+        ```
+    """
+    def __init__(self, spice_description : str, name_suffix=''):
+        """Setup a diode.
+
+        TBD
+        """
+        super().__init__(spice_description, 4, name_suffix)
+        raise ValueError(f"Device {self._spice_splitted[0]} of type {self._spice_splitted[5]} not supported!")
+    
+class Inductor(PrimitiveDevice):
+    """ Class to store an inductor
+        ```
+                  1
+                  |
+                  +-
+                    )
+                 ---
+                (
+                 ---
+                    )
+                 ---
+                (
+                 -+
+                  |
+                  2
+        ```
+    """
+    def __init__(self, spice_description : str, name_suffix=''):
+        """Setup a diode.
+
+        TBD
+        """
+        super().__init__(spice_description, 4, name_suffix)
+        raise ValueError(f"Device {self._spice_splitted[0]} of type {self._spice_splitted[5]} not supported!")
+    
+class Bipolar(PrimitiveDevice):
+    """ Class to store a bipolar junction transistor (BJT)
+        ```
+                  C
+                  |
+                  |
+               | /   
+               |/    
+           B---|   
+               |\    
+               | v 
+                  |
+                  E
+        ```
+    """
+    def __init__(self, spice_description : str, name_suffix=''):
+        """Setup a diode.
+
+        TBD
+        """
+        super().__init__(spice_description, 4, name_suffix)
+        raise ValueError(f"Device {self._spice_splitted[0]} of type {self._spice_splitted[5]} not supported!")
     
 class MOS(PrimitiveDevice):
     """ Class to store a MOSFET.

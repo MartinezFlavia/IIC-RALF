@@ -94,11 +94,11 @@ class Magic:
         # Send one empty-string command to magic.  For some reason the first command gets lost,
         # so this prevents the loss of the next command to be sent.  Have not debugged the
         # issue, so just keeping the workaround.
-        self.magic_command('')
-
-        # Test of command/response:
-        response = self.magic_command('cellname top')
-        print('Diagnostic:  magic initial output is: ' + str(response))
+        response = self.magic_command('')
+        # Diagnostic. . .  Output magic's startup text
+        print('***Magic starting up:')
+        print(response)
+        print('***Magic ready and waiting for commands.')
 
     def close(self):
         """
@@ -107,7 +107,7 @@ class Magic:
         # Pass the "quit -noprompt" command to magic, then close out the process.
         magicproc = self._process
         if magicproc:
-            self.magic_command('quit -noprompt')
+            self.magic_command('quit -noprompt', expect_output=False)
             # Ignore any remaining output
             magicproc.wait()
             return_code = magicproc.exitstatus
@@ -123,7 +123,7 @@ class Magic:
         self._circuit = circuit
         
 
-    def magic_command(self, command, expect_output=False):
+    def magic_command(self, command, expect_output=True):
         """
             Apply a Tcl command (may be a multi-line set of commands) to 
             magic and capture and return the result.
@@ -132,7 +132,7 @@ class Magic:
         if not magicproc:
             return None
 
-        print('Diagnostic:  magic_command: sending: "' + str(command) + '"')
+        # print('Diagnostic:  magic_command: sending: "' + str(command) + '"')
 
         # Check if "command" is a list
 
@@ -145,10 +145,29 @@ class Magic:
             magicproc.send(command)
 
         if expect_output:
-            maglines = magicproc.read()
+            magicproc.expect('%')	# Wait for the prompt
+            # maglines = magicproc.read()
+            maglines = magicproc.before.decode('ascii').splitlines()
             if len(maglines) > 0:
-                print('Diagnostic:  magic_command returned: "' + str(maglines) + '"')
-            return maglines
+                # May need to deal with multiple commands being echoed back.
+                mecho = maglines[0].strip()
+                if isinstance(command, list): 
+                    # print('Diagnostic:  Output from command list is:')
+                    # print(str(maglines))
+                    pass
+                elif mecho == command.strip():
+                    # print('1st line output echoes command')
+                    maglines = maglines[1:]
+                else:
+                    # print('1st line output does not echo command')
+                    # print('Command is: "' + ascii(command) + '"')
+                    # print('1st line output is: "' + ascii(mecho) + '"')
+                    pass
+                outlines = list(item for item in maglines if item != '')
+                # print('Diagnostic:  magic_command returned: "' + str(outlines) + '"')
+                return '\n'.join(outlines)
+            else:
+                return maglines.strip()
         else:
             return None
         
