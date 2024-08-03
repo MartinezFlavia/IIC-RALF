@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 import networkx as nx
 
 
-from SchematicCapture.Devices import MOS, ThreeTermResistor, Capacitor, SubDevice, NTermDevice, SUPPORTED_DEVICES
+from SchematicCapture.Devices import MOS, ThreeTermResistor, Capacitor, SubDevice, NTermDevice, Diode, Inductor, Bipolar, SUPPORTED_DEVICES
 from SchematicCapture.Net import Net, SubNet
 from Magic import Magic
 

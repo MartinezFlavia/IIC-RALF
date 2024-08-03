@@ -712,11 +712,59 @@ class Diode(PrimitiveDevice):
     def __init__(self, spice_description : str, name_suffix=''):
         """Setup a diode.
 
-        TBD
+        Args:
+            spice_description (str): Spice description of the diode.
+            name_suffix (str, optional): Name suffix of the device. Defaults to ''.
+
+        Raises:
+            ValueError: If the diode uses a model that is not supported.
         """
-        super().__init__(spice_description, 4, name_suffix)
-        raise ValueError(f"Device {self._spice_splitted[0]} of type {self._spice_splitted[5]} not supported!")
-    
+        super().__init__(spice_description, 2, name_suffix)
+
+        #check if the model is supported
+        if self._spice_splitted[3] not in SUPPORTED_DEVICES:
+            SUPPORTED_DEVICES[self._spice_splitted[3]] = len(SUPPORTED_DEVICES)
+            # raise ValueError(f"Device {self._spice_splitted[0]} of type {self._spice_splitted[3]} not supported!")
+
+        #set the model
+        self._model = self._spice_splitted[3]
+        #add the model as feature
+        self.add_feature("model", SUPPORTED_DEVICES[self._model])
+
+        #set the parameters of the device
+        self._parameters = {"area":None, "pj":None, "m":None}
+        self._set_params()
+
+        #add features from the parameters
+        self.add_feature("area", self._parameters["area"])
+        self.add_feature("pj", self._parameters["pj"])
+        self.add_feature("m", self._parameters["m"])
+
+    def _setup_terminals(self):
+        """ Setup the terminals of the device.
+            -> The terminals are the devices pins. 'A' (anode) & 'C' (cathode)
+        """
+        self._terminals["A"] = Pin('A', self)
+        self._terminals["C"] = Pin('C', self)
+
+    def _gen_placement_rule(self):
+        """Generate placement rules for the device.
+        """
+        if 'pd' in self.model:
+            #generate a spacing rule for the nwell
+            rule = PlacementRules.Spacing(cell=self.cell, layer=global_pdk.get_layer("nwell"), net=self.terminal_nets['C'])
+        self._placement_rules = PlacementRules.PlacementRules(cell=self.cell, rules=[rule])
+
+        super()._gen_placement_rules()
+
+    def _generate_routing_rules(self) -> list[RoutingRule]:
+        super()._generate_routing_rules()
+        #generate a obstacle rule for the bottom layer
+        # -> it isn't allowed to route on the bottom layer
+        obstacle_rule = ObstacleRule(cell=self.cell, layer=global_pdk.get_layer("m3"))
+        return [obstacle_rule]
+
+
 class Inductor(PrimitiveDevice):
     """ Class to store an inductor
         ```
@@ -736,12 +784,12 @@ class Inductor(PrimitiveDevice):
         ```
     """
     def __init__(self, spice_description : str, name_suffix=''):
-        """Setup a diode.
+        """Setup an inductor.
 
         TBD
         """
-        super().__init__(spice_description, 4, name_suffix)
-        raise ValueError(f"Device {self._spice_splitted[0]} of type {self._spice_splitted[5]} not supported!")
+        raise NotImplementedError
+        super().__init__(spice_description, 2, name_suffix)
     
 class Bipolar(PrimitiveDevice):
     """ Class to store a bipolar junction transistor (BJT)
@@ -759,13 +807,56 @@ class Bipolar(PrimitiveDevice):
         ```
     """
     def __init__(self, spice_description : str, name_suffix=''):
-        """Setup a diode.
+        """Setup a bipolar junction transistor.
 
-        TBD
+        Args:
+            spice_description (str): Spice description of the BJT.
+            name_suffix (str, optional): Name suffix of the device. Defaults to ''.
+
+        Raises:
+            ValueError: If the BJT uses a not supported model.
         """
-        super().__init__(spice_description, 4, name_suffix)
-        raise ValueError(f"Device {self._spice_splitted[0]} of type {self._spice_splitted[5]} not supported!")
-    
+        super().__init__(spice_description, 3, name_suffix)
+
+        #check if the model is supported
+        if self._spice_splitted[4] not in SUPPORTED_DEVICES:
+             SUPPORTED_DEVICES[self._spice_splitted[4]] = len(SUPPORTED_DEVICES)
+        #    raise ValueError(f"Device {self._spice_splitted[0]} of type {self._spice_splitted[4]} not supported!")
+
+        #set the model
+        self._model = self._spice_splitted[4]
+        #add the model as feature
+        self.add_feature("model", SUPPORTED_DEVICES[self._model])
+
+        #set the parameters
+        self._parameters = {"m" : None}
+        self._set_params()
+
+        #add parameters as features
+        self.add_feature("m", self._parameters["m"])
+
+    def _setup_terminals(self):
+        """ Setup the terminals of the BJT.
+        """
+        self._terminals["E"] = Pin('E', self)
+        self._terminals["B"] = Pin('B', self)
+        self._terminals["C"] = Pin('C', self)
+
+    def _gen_placement_rules(self):
+        if 'npn' in self.model:
+            #npn has no spacing rule
+            pass
+        elif 'pnp' in self.model:
+            #generate a spacing rule for the nwell
+            rule = PlacementRules.Spacing(cell=self.cell, layer=global_pdk.get_layer("nwell"), net=self.terminal_nets['B'])
+            self._placement_rules = PlacementRules.PlacementRules(cell=self.cell, rules=[rule])
+        else:
+            raise ValueError("No valid model for placement-rule given!")
+
+    def _generate_routing_rules(self) -> list[RoutingRule]:
+        return super()._generate_routing_rules()
+
+
 class MOS(PrimitiveDevice):
     """ Class to store a MOSFET.
         ```        
