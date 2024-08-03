@@ -343,7 +343,12 @@ class Circuit:
                 classname = 'inductor'
             elif modelchar == 'Q':
                 classname = 'bjt'
+            elif modelchar == '.':
+                # '.subckt' and '.ends' lines end up here;  ignore them.
+                # print('Info:  ignoring line ' + l)
+                continue
             else:
+                # Probably something is very wrong if it gets here. . .
                 print('Diagnostic:  fall-back on classname None')
                 print('    Line is: ' + l)
                 print('    instance is: ' + instance)
@@ -373,7 +378,7 @@ class Circuit:
 	    # (last token not being a parameter), and query magic for the
 	    # device class, and create the device accordingly.
 
-            print('Diagnostic:  classname is ' + str(classname))
+            # print('Diagnostic:  classname is ' + str(classname))
 
             #generate devices
             if classname == 'mosfet':
@@ -403,7 +408,8 @@ class Circuit:
                 device = SubDevice(l, name_suffix=name_suffix, terminal_names = terminal_names)
                 
                 #generate a sub-circuit for the SubDevice
-                subcirc = SubCircuit(subnet, self, device, self._topology_layer+1)
+                # print('**Info: SubCircuit(), device=' + str(device))
+                subcirc = SubCircuit(subnet, self, M, device, self._topology_layer+1)
                 
                 #generate a circuit graph for the SubCircuit
                 subcirc.generate_circuit_graph()
@@ -600,13 +606,14 @@ class SubCircuit(Circuit):
         This circuit is the parent-circuit of the sub-circuit.
         A sub-circuit describes the internal circuitry of a SubDevice.
     """
-    def __init__(self, netlist : Netlist, parent_circuit : Circuit, sub_device : SubDevice, topology_layer=2):
+    def __init__(self, netlist : Netlist, parent_circuit : Circuit, magic : Magic, sub_device : SubDevice, topology_layer=2):
         """Setup a sub-circuit. 
             Only non-parametrized sub-circuits are supported!
 
         Args:
             netlist (Netlist): Netlist of the SubCircuit, starting with .subckt subname N1 <N2 N3 ...>. 
             parent_circuit (Circuit): Parent circuit of the SubCircuit. (Circuit in which the SubCircuit is located.)
+            magic (Magic): Running magic process.
             sub_device (SubDevice): SubDevice to which the SubCircuit belongs.
             topology_layer (int, optional): Topological layer of the circuit. (-> parent_circuit.topology_layer +1) Defaults to 2.
         """
@@ -620,7 +627,7 @@ class SubCircuit(Circuit):
         self._terminal_net_keys = SubCircuit.get_terminal_names(netlist._net[0])
         
         #setup the circuit
-        super().__init__(netlist,topology_layer, name=netlist._net[0].split()[1])
+        super().__init__(netlist,magic,topology_layer, name=netlist._net[0].split()[1])
         
     @property
     def sub_device(self) -> SubDevice:

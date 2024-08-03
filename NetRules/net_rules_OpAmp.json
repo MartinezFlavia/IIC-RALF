@@ -1,0 +1,24 @@
+[    
+    ["MinNetWireWidth",
+    {
+        "net" : "VGND",
+        "min_width" : 28
+    }
+    ],
+    ["MinNetWireWidth",
+    {
+        "net" : "VPWR",
+        "min_width" : 28
+    }
+    ],
+    ["Ports",
+    {
+        "nets" : ["VGND", "VPWR", "Vp", "Vn", "Vocm", "Vop", "Von"]
+    }
+    ],
+    ["PowerNets",
+    {
+        "nets" : ["VPWR", "VGND"]
+    }
+    ]        
+]

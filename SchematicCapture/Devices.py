@@ -197,7 +197,16 @@ class Device(metaclass = abc.ABCMeta):
             feature (str): Feature identifier.
             value (int/float): Feature value. 
         """
-        assert type(value)==int or type(value)==float
+        if not isinstance(value, int) or isinstance(value, float):
+            try:
+                value = float(value)
+            except:
+                print('Warning:  add_feature:  parameter "' + feature + '" value "' + str(value) + '" is not int or float.')
+            else:
+                if value == int(value):
+                    value = int(value)
+
+        # assert type(value)==int or type(value)==float
         self._features[feature] = value
     
     def update_feature(self, feature : str, value : int|float) -> bool:
@@ -580,7 +589,7 @@ class ThreeTermResistor(PrimitiveDevice):
 
         #set the parameters which shall be stored
         # ToDo: Generalize for other widths  
-        self._parameters = {"L":None, "mult":None, "m":None, "W": 0.35}
+        self._parameters = {"L":None, "mult":1, "m":1, "W": 0.35}
         self._set_params()
         
         #add features from the parameters
@@ -588,7 +597,7 @@ class ThreeTermResistor(PrimitiveDevice):
         self.add_feature("L", self._parameters["L"])
         self.add_feature("W", 0.35)
         self.add_feature("m", self._parameters["m"])
-        self.add_feature("nf", 0)
+        self.add_feature("nf", 1)
 
     
     def _setup_terminals(self):
@@ -653,7 +662,7 @@ class Capacitor(PrimitiveDevice):
         self.add_feature("L", self._parameters["L"])
         self.add_feature("W", self._parameters["W"])
         self.add_feature("m", self._parameters["m"])
-        self.add_feature("nf", 0)
+        self.add_feature("MF", 1)
 
     def _setup_terminals(self):
         """ Setup the terminals of the device.
@@ -732,7 +741,7 @@ class Diode(PrimitiveDevice):
         self.add_feature("model", SUPPORTED_DEVICES[self._model])
 
         #set the parameters of the device
-        self._parameters = {"area":None, "pj":None, "m":None}
+        self._parameters = {"area":1, "pj":1, "m":1}
         self._set_params()
 
         #add features from the parameters
@@ -747,14 +756,13 @@ class Diode(PrimitiveDevice):
         self._terminals["A"] = Pin('A', self)
         self._terminals["C"] = Pin('C', self)
 
-    def _gen_placement_rule(self):
+    def _gen_placement_rules(self):
         """Generate placement rules for the device.
         """
         if 'pd' in self.model:
             #generate a spacing rule for the nwell
             rule = PlacementRules.Spacing(cell=self.cell, layer=global_pdk.get_layer("nwell"), net=self.terminal_nets['C'])
         self._placement_rules = PlacementRules.PlacementRules(cell=self.cell, rules=[rule])
-
         super()._gen_placement_rules()
 
     def _generate_routing_rules(self) -> list[RoutingRule]:
@@ -829,7 +837,7 @@ class Bipolar(PrimitiveDevice):
         self.add_feature("model", SUPPORTED_DEVICES[self._model])
 
         #set the parameters
-        self._parameters = {"m" : None}
+        self._parameters = {"m" : 1}
         self._set_params()
 
         #add parameters as features
@@ -894,8 +902,8 @@ class MOS(PrimitiveDevice):
         self.add_feature("model", SUPPORTED_DEVICES[self._model])
         
         #set the parameters
-        self._parameters = {"L" : None, "W" : None, "nf" : None, "mult" : None,
-                            "m" : None, "ad" : None, "as" : None, "pd" : None, "ps" : None}
+        self._parameters = {"L" : None, "W" : None, "nf" : 1, "mult" : 1,
+                            "m" : 1, "ad" : None, "as" : None, "pd" : None, "ps" : None}
         self._set_params()
         
         #add parameters as features
@@ -958,11 +966,11 @@ class SubDevice(NTermDevice):
         self._circuit = None 
 
         #add features - a sub-device has no "real" features
-        self.add_feature("model", None)
+        self.add_feature("model", -1)
         self.add_feature("L", 0)
         self.add_feature("W", 0)
-        self.add_feature("m", 0)
-        self.add_feature("nf", 0)
+        self.add_feature("m", 1)
+        self.add_feature("nf", 1)
 
     def set_circuit(self, circ : SubCircuit):
         """Set the internal circuit of the device.
