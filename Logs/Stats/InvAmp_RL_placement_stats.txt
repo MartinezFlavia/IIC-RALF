@@ -1,0 +1,16 @@
++----------------------+------------+
+|         Name         |   Value    |
++----------------------+------------+
+|       Circuit        |   InvAmp   |
+|    Time taken [s]    |     21     |
+|      Placements      |    1000    |
+| Placements per batch |    100     |
+|      Env. size       | 5131x5131  |
+|  Solution placement  |    946     |
+|      Total HPWL      |  24892.0   |
+|      Congestion      | 934674.43  |
+|        Reward        | -25858.79  |
+|     Total width      |   4325.0   |
+|     Total height     |   3617.0   |
+|         Area         | 15643525.0 |
++----------------------+------------+

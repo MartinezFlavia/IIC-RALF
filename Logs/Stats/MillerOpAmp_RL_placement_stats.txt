@@ -1,0 +1,16 @@
++----------------------+-------------+
+|         Name         |    Value    |
++----------------------+-------------+
+|       Circuit        | MillerOpAmp |
+|    Time taken [s]    |      38     |
+|      Placements      |     1000    |
+| Placements per batch |     100     |
+|      Env. size       |  4936x4936  |
+|  Solution placement  |      22     |
+|      Total HPWL      |   16680.0   |
+|      Congestion      |  317548.74  |
+|        Reward        |  -17243.51  |
+|     Total width      |    1970.0   |
+|     Total height     |    3386.0   |
+|         Area         |  6670420.0  |
++----------------------+-------------+

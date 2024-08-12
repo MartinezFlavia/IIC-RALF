@@ -34,53 +34,79 @@ from logging.handlers import RotatingFileHandler
 
 #########################################################################
 
-#global variables to control the placement
-CIRCUIT_FILE = "Circuits/Examples/DiffAmp.spice"        #Input spice-netlist
-CIRCUIT_NAME = "DiffAmp"                                #Name of the top-circuit
-NET_RULES_FILE = "NetRules/net_rules_DiffAmp.json"      #Net-rules definition file
-N_PLACEMENTS = 1000                                     #Number of trial placements per circuit/subcircuit
+# Default values for global variables
+DEFAULT_CIRCUIT_NAME = "DiffAmp"                                # Name of the top-circuit
+DEFAULT_CIRCUIT_FILE = f"Circuits/Examples/{DEFAULT_CIRCUIT_NAME}.spice"        # Input spice-netlist
+DEFAULT_NET_RULES_FILE = f"NetRules/net_rules_{DEFAULT_CIRCUIT_NAME}.json"      # Net-rules definition file
+N_PLACEMENTS = 1000                                             # Number of trial placements per circuit/subcircuit
 
-USE_LOGGER = False                  #If True, debug information will be logged under "Logs/{CIRCUIT_NAME}_placement.log".
-INSTANTIATE_CELLS_IN_MAGIC = True   #If True, the devices cell-view will be instantiated in Magic
-N_PLACEMENTS_PER_ROLLOUT = 100      #Number of trial placements per RL - rollout
-DEF_FILE = None                     #Def file of the circuit
-SHOW_STATS = True                   #Show statistics of the placement
+USE_LOGGER = False                  # If True, debug information will be logged under "Logs/{CIRCUIT_NAME}_placement.log".
+INSTANTIATE_CELLS_IN_MAGIC = True   # If True, the devices cell-view will be instantiated in Magic
+N_PLACEMENTS_PER_ROLLOUT = 100      # Number of trial placements per RL - rollout
+DEF_FILE = None                     # Def file of the circuit
+SHOW_STATS = True                   # Show statistics of the placement
 
 #########################################################################
 
-def main():
+def main(circuit_name):
+    
+    print("Reinforcement learning based placement:")
 
+    # Get user input or use default values
+    if circuit_name == None:    
+        #circuit_name = input(f"Enter the circuit name (default: {DEFAULT_CIRCUIT_NAME}): ") or DEFAULT_CIRCUIT_NAME
+        circuit_name = input(f"Enter the circuit file name (default: {DEFAULT_CIRCUIT_NAME}): ") or DEFAULT_CIRCUIT_NAME
+        circuit_file = DEFAULT_CIRCUIT_FILE
+        net_rules_file = DEFAULT_NET_RULES_FILE
+    circuit_file = f"Circuits/Examples/{circuit_name}.spice"
+    net_rules_file = f"NetRules/net_rules_{circuit_name}.json"
+    
     if USE_LOGGER:
-        #Setup a logger
-        logHandler = RotatingFileHandler(filename=f"Logs/{CIRCUIT_NAME}_placement.log", mode='w', maxBytes=100e3, backupCount=1, encoding='utf-8')
+        # Setup a logger
+        logHandler = RotatingFileHandler(filename=f"Logs/{circuit_name}_placement.log", mode='w', maxBytes=100e3, backupCount=1, encoding='utf-8')
         logHandler.setLevel(logging.DEBUG)
         logging.basicConfig(handlers=[logHandler], level=logging.DEBUG, format="[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)d] %(message)s")
     
-    #setup the circuit
-    C = setup_circuit(CIRCUIT_FILE, CIRCUIT_NAME, [], net_rules_file=NET_RULES_FILE)
-    
-    #include primitive compositions into the circuit
+
+    print("Setting up the circuit...")
+    # Setup the circuit
+    C = setup_circuit(circuit_file, circuit_name, [], net_rules_file=net_rules_file)
+    print(f"Circuit setup completed: {C}")
+
+    print("Including primitive compositions into the circuit...")
+    # Include primitive compositions into the circuit
     include_primitives_hierarchical(C)
     include_RStrings_hierarchical(C)
+    print("Primitive compositions included.")
 
-    #instantiate the circuit cells in magic
+    # Instantiate the circuit cells in magic
     if INSTANTIATE_CELLS_IN_MAGIC:
-        instantiate_circuit(C,"Magic/Devices")
+        print("Instantiating the circuit cells in Magic...")
+        instantiate_circuit(C, "Magic/Devices")
+        print("Circuit cells instantiated in Magic.")
 
-    #add the cells to the devices
+    print("Adding cells to the devices...")
+    # Add the cells to the devices
     add_cells(C, "Magic/Devices")
+    print("Cells added to the devices.")
 
-    #define a die for the circuit
+    print("Defining a die for the circuit...")
+    # Define a die for the circuit
     die = MagicDie(circuit=C, def_file=DEF_FILE)
+    print("Die defined.")
 
-    #do the placement by training a RL-agent
+    print("Starting the placement by training a RL-agent...")
+    # Do the placement by training a RL-agent
     do_bottom_up_placement(C, N_PLACEMENTS, N_PLACEMENTS_PER_ROLLOUT, use_weights=False, show_stats=SHOW_STATS)
+    print("Placement completed.")
 
-    #save the placed circuit
-    file = open(f"PlacementCircuits/{CIRCUIT_NAME}_placement.pkl", 'wb')
+    print("Saving the placed circuit...")
+    # Save the placed circuit
+    file = open(f"PlacementCircuits/{circuit_name}_placement.pkl", 'wb')
     pickle.dump(die, file)
     file.close()
+    print("Placed circuit saved.")
     
 
 if __name__ == '__main__':
-    main()
+    main(None)

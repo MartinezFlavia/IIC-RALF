@@ -38,9 +38,9 @@ import pickle
 #########################################################################
 
 #global variables to control the placement
-CIRCUIT_FILE = "Circuits/Examples/DiffAmp.spice"    #Input spice-netlist
-CIRCUIT_NAME = "DiffAmp"                            #Name of the circuit
-NET_RULES_FILE = "NetRules/net_rules_DiffAmp.json"  #Net-rules definition file
+DEFAULT_CIRCUIT_NAME = "DiffAmp"                                # Name of the top-circuit
+DEFAULT_CIRCUIT_FILE = f"Circuits/Examples/{DEFAULT_CIRCUIT_NAME}.spice"        # Input spice-netlist
+DEFAULT_NET_RULES_FILE = f"NetRules/net_rules_{DEFAULT_CIRCUIT_NAME}.json"      # Net-rules definition file
 N_PLACEMENTS = 1000                                 #Number of trial placements done per circuit/subcircuit
 
 USE_LOGGER = False                   #If True, debug information will be logged under "Logs/{CIRCUIT_NAME}_placement.log".
@@ -52,16 +52,31 @@ SHOW_STATS = True                   #Show statistics of the placement
 
 #########################################################################
 
-def main():
+def main(circuit_name, circuit_file_name, net_rules_file_name):
+
+    print("Simulated Annealing Based placement:")
 
     if USE_LOGGER:
         #Setup a logger
-        logHandler = RotatingFileHandler(filename=f"Logs/{CIRCUIT_NAME}_placement.log", mode='w', maxBytes=100e3, backupCount=1, encoding='utf-8')
+        logHandler = RotatingFileHandler(filename=f"Logs/{DEFAULT_CIRCUIT_NAME}_placement.log", mode='w', maxBytes=100e3, backupCount=1, encoding='utf-8')
         logHandler.setLevel(logging.DEBUG)
         logging.basicConfig(handlers=[logHandler], level=logging.DEBUG, format="[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)d] %(message)s")
-    
-    #setup the circuit
-    C = setup_circuit(CIRCUIT_FILE, CIRCUIT_NAME, [], net_rules_file=NET_RULES_FILE)
+
+    # Get user input or use default values
+    if circuit_file_name == None:
+        circuit_file_name = input(f"Enter the circuit file name (default: {DEFAULT_CIRCUIT_NAME}): ") or DEFAULT_CIRCUIT_NAME
+    circuit_file = f"Circuits/Examples/{circuit_file_name}.spice"
+
+    if circuit_name == None:    
+        circuit_name = input(f"Enter the circuit name (default: {DEFAULT_CIRCUIT_NAME}): ") or DEFAULT_CIRCUIT_NAME
+
+    if net_rules_file_name == None:    
+        net_rules_file_name = input(f"Enter the net rules file name (default: net_rules_{DEFAULT_CIRCUIT_NAME}): ") or f"net_rules_{DEFAULT_CIRCUIT_NAME}"
+    net_rules_file = f"NetRules/{net_rules_file_name}.json"
+
+    print("Setting up the circuit...")
+    # Setup the circuit
+    C = setup_circuit(circuit_file, circuit_name, [], net_rules_file=net_rules_file)
     
     #include primitive compositions into the circuit
     include_primitives_hierarchical(C)
@@ -83,9 +98,9 @@ def main():
                            n_placements=N_PLACEMENTS, show_stats=SHOW_STATS)
 
     #save the placed circuit
-    file = open(f"PlacementCircuits/{CIRCUIT_NAME}_placement.pkl", 'wb')
+    file = open(f"PlacementCircuits/{DEFAULT_CIRCUIT_NAME}_placement.pkl", 'wb')
     pickle.dump(die, file)
     file.close()
     
 if __name__=='__main__':
-    main()
+    main(None, None, None)
