@@ -269,8 +269,12 @@ def get_primitives(circ : Circuit, M : Magic) -> dict[str, list[PrimitiveDeviceC
             devices = [circ.devices[dev] for dev in d]
             #get the class of the primitive device composition
             gen_prim = getattr(Primitives, prim)
-            new_prim = gen_prim(devices)
-            primitives[prim].append(new_prim)
+            try:
+                new_prim = gen_prim(devices)
+            except:
+                pass
+            else:
+                primitives[prim].append(new_prim)
 
     return primitives
 
