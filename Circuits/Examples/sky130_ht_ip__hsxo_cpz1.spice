@@ -1,0 +1,102 @@
+** sch_path: /home/tim/gits/cheetah_v3_analog/dependencies/sky130_ht_ip__hsxo_cpz1/xschem/sky130_ht_ip__hsxo_cpz1.sch
+.subckt sky130_ht_ip__hsxo_cpz1 XOUT XIN ENA STDBY DOUT AVDD DVDD AVSS DVSS IBIAS GUARD
+*.PININFO DVDD:B DVSS:B AVDD:B AVSS:B ENA:I STDBY:I XIN:I XOUT:O DOUT:O IBIAS:I GUARD:B
+x1 XOUT SG_AVDD EG_AVDD XIN EG_IBIAS AOUT SG_AVSS EG_AVSS vittoz_pierce_osc
+x2 SG_DVDD AIN DOUT SG_DVSS GUARD schmitt_trigger_pullmid
+XC1 AOUT AIN sky130_fd_pr__cap_mim_m3_1 W=15 L=15 m=6
+x3 DOUT SG_AVDD DVDD EG_IBIAS SG_DVDD AVDD IBIAS EG_AVDD ENA SG_DVSS SG_AVSS STDBY EG_AVSS AVSS DVSS XIN GUARD power_gating
+.ends
+
+* expanding   symbol:  vittoz_pierce_osc.sym # of pins=8
+** sym_path: /home/tim/gits/cheetah_v3_analog/dependencies/sky130_ht_ip__hsxo_cpz1/xschem/vittoz_pierce_osc.sym
+** sch_path: /home/tim/gits/cheetah_v3_analog/dependencies/sky130_ht_ip__hsxo_cpz1/xschem/vittoz_pierce_osc.sch
+.subckt vittoz_pierce_osc XOUT SG_AVDD EG_AVDD XIN EG_IBIAS AOUT SG_AVSS EG_AVSS
+*.PININFO EG_AVDD:B EG_AVSS:B SG_AVDD:B SG_AVSS:B XIN:I EG_IBIAS:I XOUT:O AOUT:O
+XM9 net6 PBIAS EG_AVDD EG_AVDD sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=1024 nf=32 m=1
+XM10 net7 PBIAS EG_AVDD EG_AVDD sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=128 nf=4 m=1
+XM11 PBIAS PBIAS EG_AVDD EG_AVDD sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=128 nf=4 m=1
+Vmeas3 net6 XOUT 0
+.save i(vmeas3)
+Vmeas4 net7 net1 0
+.save i(vmeas4)
+Vmeas2 PBIAS net3 0
+.save i(vmeas2)
+XM12 net1 net2 EG_AVSS EG_AVSS sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=128 nf=4 m=1
+XR1 net2 net1 EG_AVSS sky130_fd_pr__res_xhigh_po_0p35 L=7 mult=1 m=1
+XC1 net1 EG_AVSS sky130_fd_pr__cap_mim_m3_1 W=2 L=2 m=1
+XC2 XIN net2 sky130_fd_pr__cap_mim_m3_1 W=15 L=15 m=6
+XC7 net2 EG_AVSS sky130_fd_pr__cap_mim_m3_1 W=15 L=15 m=6
+XM13 XOUT XIN EG_AVSS EG_AVSS sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=32 nf=8 m=1
+XM14 net3 net2 net5 EG_AVSS sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=1024 nf=32 m=1
+XM15 net5 net4 EG_AVSS EG_AVSS sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=128 nf=4 m=1
+XM16 net4 net4 EG_AVSS EG_AVSS sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=8 nf=1 m=1
+XR3 XIN XOUT EG_AVSS sky130_fd_pr__res_xhigh_po_0p35 L=2.8 mult=1 m=1
+XM17 AOUT XIN SG_AVSS SG_AVSS sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=4 nf=1 m=1
+XM18 net8 PBIAS SG_AVDD SG_AVDD sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=128 nf=4 m=1
+Vmeas5 net8 AOUT 0
+.save i(vmeas5)
+XC8 AOUT SG_AVSS sky130_fd_pr__cap_mim_m3_1 W=2 L=2 m=1
+XC3 EG_AVDD EG_AVSS sky130_fd_pr__cap_mim_m3_1 W=15 L=15 m=6
+XC4 SG_AVDD SG_AVSS sky130_fd_pr__cap_mim_m3_1 W=15 L=15 m=6
+Vmeas1 EG_IBIAS net4 0
+.save i(vmeas1)
+.ends
+
+
+* expanding   symbol:  schmitt_trigger_pullmid.sym # of pins=5
+** sym_path: /home/tim/gits/cheetah_v3_analog/dependencies/sky130_ht_ip__hsxo_cpz1/xschem/schmitt_trigger_pullmid.sym
+** sch_path: /home/tim/gits/cheetah_v3_analog/dependencies/sky130_ht_ip__hsxo_cpz1/xschem/schmitt_trigger_pullmid.sch
+.subckt schmitt_trigger_pullmid SG_DVDD AIN DOUT SG_DVSS VSUB
+*.PININFO SG_DVDD:B SG_DVSS:B AIN:I DOUT:O VSUB:B
+XR3 net2 net1 SG_DVSS sky130_fd_pr__res_xhigh_po_0p35 L=128 mult=1 m=1
+XM3 DOUT net2 DHT SG_DVDD sky130_fd_pr__pfet_01v8 L=0.3 W=1 nf=1 m=1
+XM4 DOUT net2 DLT SG_DVSS sky130_fd_pr__nfet_01v8 L=0.2 W=1 nf=1 m=1
+XM5 DHT net2 SG_DVDD SG_DVDD sky130_fd_pr__pfet_01v8 L=0.3 W=1 nf=1 m=1
+XM6 DLT net2 SG_DVSS SG_DVSS sky130_fd_pr__nfet_01v8 L=0.2 W=1 nf=1 m=1
+XM7 SG_DVSS DOUT DHT SG_DVDD sky130_fd_pr__pfet_01v8 L=0.3 W=1 nf=1 m=1
+XM8 SG_DVDD DOUT DLT SG_DVSS sky130_fd_pr__nfet_01v8 L=0.2 W=1 nf=1 m=1
+XC4 SG_DVDD SG_DVSS sky130_fd_pr__cap_mim_m3_1 W=15 L=15 m=6
+XR1 net1 SG_DVDD SG_DVSS sky130_fd_pr__res_xhigh_po_0p35 L=16 mult=1 m=1
+XR2 SG_DVSS net1 SG_DVSS sky130_fd_pr__res_xhigh_po_0p35 L=16 mult=1 m=1
+Vmeas6 AIN net2 0
+.save i(vmeas6)
+.ends
+
+
+* expanding   symbol:  power_gating.sym # of pins=17
+** sym_path: /home/tim/gits/cheetah_v3_analog/dependencies/sky130_ht_ip__hsxo_cpz1/xschem/power_gating.sym
+** sch_path: /home/tim/gits/cheetah_v3_analog/dependencies/sky130_ht_ip__hsxo_cpz1/xschem/power_gating.sch
+.subckt power_gating DOUT SG_AVDD DVDD EG_IBIAS SG_DVDD AVDD IBIAS EG_AVDD ENA SG_DVSS SG_AVSS STDBY EG_AVSS AVSS DVSS XIN VSUB
+*.PININFO DVDD:B DVSS:B AVDD:B AVSS:B ENA:I STDBY:I DOUT:O IBIAS:I EG_AVDD:B EG_AVSS:B SG_AVDD:B SG_AVSS:B SG_DVDD:B SG_DVSS:B
+*+ EG_IBIAS:O XIN:I VSUB:B
+x3 AVDD ENA_B DVDD ENA ENA_H AVSS DVSS ENA_BH level_shifter_xd
+x4 AVDD STDBY_B DVDD STDBY STDBY_H AVSS DVSS STDBY_BH level_shifter_xd
+XM18 SG_DVSS STDBY_B DVSS DVSS sky130_fd_pr__nfet_01v8 L=0.15 W=32 nf=8 m=1
+XM21 EG_AVSS ENA_H AVSS AVSS sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=32 nf=8 m=1
+XM25 EG_AVDD ENA_BH AVDD AVDD sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=32 nf=8 m=1
+XM27 SG_DVDD STDBY DVDD DVDD sky130_fd_pr__pfet_01v8 L=0.15 W=32 nf=8 m=1
+XM1 SG_AVDD STDBY_H AVDD AVDD sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=32 nf=8 m=1
+XM2 EG_IBIAS ENA_BH IBIAS AVDD sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=32 nf=8 m=1
+XM3 SG_AVSS STDBY_BH AVSS AVSS sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=32 nf=8 m=1
+XM4 DOUT STDBY DVSS DVSS sky130_fd_pr__nfet_01v8 L=0.15 W=32 nf=8 m=1
+XC3 AVDD AVSS sky130_fd_pr__cap_mim_m3_1 W=15 L=15 m=6
+XC4 DVDD DVSS sky130_fd_pr__cap_mim_m3_1 W=15 L=15 m=6
+XD1 XIN AVDD sky130_fd_pr__diode_pd2nw_11v0 area=2e11 perim=4e6
+XD2 AVSS XIN sky130_fd_pr__diode_pw2nd_11v0 area=2e11 perim=4e6
+.ends
+
+
+* expanding   symbol:  level_shifter_xd.sym # of pins=8
+** sym_path: /home/tim/gits/cheetah_v3_analog/dependencies/sky130_ht_ip__hsxo_cpz1/xschem/level_shifter_xd.sym
+** sch_path: /home/tim/gits/cheetah_v3_analog/dependencies/sky130_ht_ip__hsxo_cpz1/xschem/level_shifter_xd.sch
+.subckt level_shifter_xd AVDD LO_B DVDD LO HI AVSS DVSS HI_B
+*.PININFO DVDD:B DVSS:B AVDD:B AVSS:B LO:I LO_B:O HI:O HI_B:O
+XM18 LO_B LO DVSS DVSS sky130_fd_pr__nfet_01v8 L=0.15 W=1 nf=1 m=1
+XM21 HI_B LO AVSS AVSS sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=1 nf=1 m=1
+XM25 HI_B HI AVDD AVDD sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=1 nf=1 m=1
+XM27 LO_B LO DVDD DVDD sky130_fd_pr__pfet_01v8 L=0.15 W=1 nf=1 m=1
+XM1 HI HI_B AVDD AVDD sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=1 nf=1 m=1
+XM2 HI LO_B AVSS AVSS sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=1 nf=1 m=1
+.ends
+
+.end

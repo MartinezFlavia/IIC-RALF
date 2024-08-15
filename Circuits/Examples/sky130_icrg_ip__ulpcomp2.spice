@@ -1,0 +1,68 @@
+** sch_path: /home/tim/gits/cheetah_v3_analog/dependencies/sky130_icrg_ip__ulpcomp/xschem/sky130_icrg_ip__ulpcomp2.sch
+.subckt sky130_icrg_ip__ulpcomp2 dvdd avdd ena vout vinn vinp clk dvss avss
+*.PININFO avdd:I vinp:I vinn:I vout:O dvdd:I clk:I ena:I dvss:I avss:I
+x1 dvddb clka clk clkb dvss Stage0_clk_inv
+x2 avdd enab clka vinn vinp net2 net1 avss dvss dvdd Stage1
+x3 dvdd enab dvddb clkb vout net2 net1 dvss Stage2_latch
+x4 dvdd ena enab dvss Stage0_ena_inv
+.ends
+
+* expanding   symbol:  Stage0_clk_inv.sym # of pins=5
+** sym_path: /home/tim/gits/cheetah_v3_analog/dependencies/sky130_icrg_ip__ulpcomp/xschem/Stage0_clk_inv.sym
+** sch_path: /home/tim/gits/cheetah_v3_analog/dependencies/sky130_icrg_ip__ulpcomp/xschem/Stage0_clk_inv.sch
+.subckt Stage0_clk_inv dvddb clka clk clkb dvss
+*.PININFO dvss:O dvddb:I clka:O clk:I clkb:O
+XM22 clka clkb dvddb dvddb sky130_fd_pr__pfet_01v8 L=0.5 W=2 nf=1 m=1
+XM8 clkb clk dvddb dvddb sky130_fd_pr__pfet_01v8 L=0.5 W=2 nf=1 m=1
+XM6 clkb clk dvss dvss sky130_fd_pr__nfet_01v8 L=0.5 W=1 nf=1 m=1
+XM21 clka clkb dvss dvss sky130_fd_pr__nfet_01v8 L=0.5 W=1 nf=1 m=1
+.ends
+
+
+* expanding   symbol:  Stage1.sym # of pins=10
+** sym_path: /home/tim/gits/cheetah_v3_analog/dependencies/sky130_icrg_ip__ulpcomp/xschem/Stage1.sym
+** sch_path: /home/tim/gits/cheetah_v3_analog/dependencies/sky130_icrg_ip__ulpcomp/xschem/Stage1.sch
+.subckt Stage1 avdd enab clka vinn vinp oneg opos avss dvss dvdd
+*.PININFO avdd:I vinp:I vinn:I opos:O oneg:O clka:I enab:I dvdd:I avss:I dvss:I
+XM1 net4 net5 avdd avdd sky130_fd_pr__pfet_g5v0d10v5 L=1 W=50 nf=2 m=2
+x2 clka dvdd dvss dvss avdd avdd net2 sky130_fd_sc_hvl__lsbuflv2hv_1
+XM6 net1 net2 net4 net4 sky130_fd_pr__pfet_g5v0d10v5 L=1 W=50 nf=2 m=2
+XM2 oneg vinp net1 net1 sky130_fd_pr__pfet_g5v0d10v5 L=1 W=20 nf=2 m=2
+XM3 opos vinn net1 net1 sky130_fd_pr__pfet_g5v0d10v5 L=1 W=20 nf=2 m=2
+XM4 net3 net3 avss avss sky130_fd_pr__nfet_03v3_nvt L=0.5 W=5 nf=1 m=2
+XM8 opos net2 net3 net3 sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=5 nf=1 m=1
+XM5 oneg net2 net3 net3 sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=5 nf=1 m=1
+x1 enab dvdd dvss dvss avdd avdd net5 sky130_fd_sc_hvl__lsbuflv2hv_1
+.ends
+
+
+* expanding   symbol:  Stage2_latch.sym # of pins=8
+** sym_path: /home/tim/gits/cheetah_v3_analog/dependencies/sky130_icrg_ip__ulpcomp/xschem/Stage2_latch.sym
+** sch_path: /home/tim/gits/cheetah_v3_analog/dependencies/sky130_icrg_ip__ulpcomp/xschem/Stage2_latch.sch
+.subckt Stage2_latch dvdd enab dvddb clkb vout oneg opos dvss
+*.PININFO clkb:I vout:O dvss:O dvdd:I opos:I oneg:I enab:I dvddb:O
+XM18 vout net1 dvss dvss sky130_fd_pr__nfet_01v8 L=0.5 W=1 nf=1 m=1
+XM19 vout net1 dvddb dvddb sky130_fd_pr__pfet_01v8 L=1 W=2 nf=1 m=1
+XM15 net5 clkb dvss dvss sky130_fd_pr__nfet_03v3_nvt L=0.5 W=2 nf=1 m=1
+XM9 net1 clkb dvddb dvddb sky130_fd_pr__pfet_01v8_hvt L=1 W=3 nf=1 m=2
+XM10 net2 net1 dvddb dvddb sky130_fd_pr__pfet_01v8_hvt L=1 W=3 nf=1 m=2
+XM11 net1 net2 dvddb dvddb sky130_fd_pr__pfet_01v8_hvt L=1 W=3 nf=1 m=2
+XM12 net2 clkb dvddb dvddb sky130_fd_pr__pfet_01v8_hvt L=1 W=3 nf=1 m=2
+XM1 dvddb enab dvdd dvdd sky130_fd_pr__pfet_01v8_hvt L=1 W=3 nf=1 m=2
+XM2 net1 opos net3 dvss sky130_fd_pr__nfet_03v3_nvt L=0.5 W=1 nf=1 m=1
+XM3 net4 net1 net5 dvss sky130_fd_pr__nfet_03v3_nvt L=0.5 W=1 nf=1 m=1
+XM4 net3 net2 net5 dvss sky130_fd_pr__nfet_03v3_nvt L=0.5 W=1 nf=1 m=1
+XM5 net2 oneg net4 dvss sky130_fd_pr__nfet_03v3_nvt L=0.5 W=1 nf=1 m=1
+.ends
+
+
+* expanding   symbol:  Stage0_ena_inv.sym # of pins=4
+** sym_path: /home/tim/gits/cheetah_v3_analog/dependencies/sky130_icrg_ip__ulpcomp/xschem/Stage0_ena_inv.sym
+** sch_path: /home/tim/gits/cheetah_v3_analog/dependencies/sky130_icrg_ip__ulpcomp/xschem/Stage0_ena_inv.sch
+.subckt Stage0_ena_inv dvdd ena enab dvss
+*.PININFO ena:I dvdd:I dvss:O enab:O
+XM25 enab ena dvdd dvdd sky130_fd_pr__pfet_01v8 L=0.5 W=2 nf=1 m=1
+XM24 enab ena dvss dvss sky130_fd_pr__nfet_01v8 L=0.5 W=1 nf=1 m=1
+.ends
+
+.end

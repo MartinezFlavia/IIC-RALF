@@ -1,0 +1,192 @@
+** sch_path: /home/tim/gits/cheetah_v3_analog/dependencies/sky130_ak_ip__comparator/xschem/sky130_ak_ip__comparator.sch
+.subckt sky130_ak_ip__comparator DVDD AVDD AGND Vinp Vout Vinm en hyst[1] hyst[0] trim[5] trim[4] trim[3] trim[2] trim[1] trim[0]
++ ibias DGND
+*.PININFO Vinp:I Vinm:I AVDD:I AGND:I en:I hyst[1:0]:I trim[5:0]:I Vout:O DGND:I ibias:I DVDD:I
+XM7 bias_n bias_n AGND AGND sky130_fd_pr__nfet_g5v0d10v5 L=4 W=2 nf=1 m=2
+XM6 Vfold_p Vinm Vxm AGND sky130_fd_pr__nfet_g5v0d10v5 L=1.5 W=8 nf=1 m=28
+XM2 net1 bias_n AGND AGND sky130_fd_pr__nfet_g5v0d10v5 L=4 W=2 nf=1 m=48
+XM1 Vfold_m Vinp Vxm AGND sky130_fd_pr__nfet_g5v0d10v5 L=1.5 W=8 nf=1 m=28
+XM4 net4 bias_var_tailp AVDD AVDD sky130_fd_pr__pfet_g5v0d10v5 L=4 W=2 nf=1 m=96
+XM5 Vfold_bot_p Vinm Vxp AVDD sky130_fd_pr__pfet_g5v0d10v5 L=1.5 W=8 nf=1 m=28
+XM17 Vfold_bot_m Vinp Vxp AVDD sky130_fd_pr__pfet_g5v0d10v5 L=1.5 W=8 nf=1 m=28
+XM22 net2 bias_stg2 AVDD AVDD sky130_fd_pr__pfet_g5v0d10v5 L=4 W=2 nf=1 m=4
+XM23 Vom_stg2 Vop net2 AVDD sky130_fd_pr__pfet_g5v0d10v5 L=1 W=4 nf=1 m=1
+XM24 Vop_stg2 Vom net2 AVDD sky130_fd_pr__pfet_g5v0d10v5 L=1 W=4 nf=1 m=1
+XM25 Vop_stg2 Vop_stg2 AGND AGND sky130_fd_pr__nfet_g5v0d10v5 L=1 W=2 nf=1 m=2
+XM26 Vom_stg2 Vom_stg2 AGND AGND sky130_fd_pr__nfet_g5v0d10v5 L=1 W=2 nf=1 m=2
+XM27 net3 Vom_stg2 DGND DGND sky130_fd_pr__nfet_g5v0d10v5 L=1 W=2 nf=1 m=2
+XM28 Vdiff Vop_stg2 DGND DGND sky130_fd_pr__nfet_g5v0d10v5 L=1 W=2 nf=1 m=2
+XM29 Vdiff net3 DVDD DVDD sky130_fd_pr__pfet_01v8 L=1 W=4 nf=1 m=2
+XM30 net3 net3 DVDD DVDD sky130_fd_pr__pfet_01v8 L=1 W=4 nf=1 m=2
+XM31 Vout_int Vdiff DVDD DVDD sky130_fd_pr__pfet_01v8 L=0.15 W=2 nf=1 m=1
+XM44 Vout_int Vdiff DGND DGND sky130_fd_pr__nfet_01v8 L=0.15 W=1 nf=1 m=1
+XM45 net52 ibias bias_n AGND sky130_fd_pr__nfet_g5v0d10v5 L=4 W=2 nf=1 m=1
+XM48 bias_n enb_hv AGND AGND sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=4 nf=1 m=4
+XM40 net11 bias_n net5 AGND sky130_fd_pr__nfet_g5v0d10v5 L=4 W=2 nf=1 m=8
+XM53 Vfold_p Voutb Vx_hyst_n AGND sky130_fd_pr__nfet_g5v0d10v5 L=1 W=2 nf=1 m=8
+XM54 Vfold_m Vout_int Vx_hyst_n AGND sky130_fd_pr__nfet_g5v0d10v5 L=1 W=2 nf=1 m=8
+XM73 net12 bias_n net24 AGND sky130_fd_pr__nfet_g5v0d10v5 L=4 W=2 nf=1 m=3
+XM75 Voutb Vout_int DVDD DVDD sky130_fd_pr__pfet_01v8 L=0.15 W=2 nf=1 m=1
+XM76 Voutb Vout_int DGND DGND sky130_fd_pr__nfet_01v8 L=0.15 W=1 nf=1 m=1
+XM90 Vxm casc_n net1 AGND sky130_fd_pr__nfet_g5v0d10v5 L=1 W=2 nf=1 m=48
+XM91 Vxp casc_p net4 AVDD sky130_fd_pr__pfet_g5v0d10v5 L=1 W=2 nf=1 m=96
+XM94 net10 bias_n AGND AGND sky130_fd_pr__nfet_g5v0d10v5 L=4 W=2 nf=1 m=2
+XM95 bias_p bias_p AVDD AVDD sky130_fd_pr__pfet_g5v0d10v5 L=4 W=2 nf=1 m=4
+XM16 net5 hyst1_hv AGND AGND sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=2 nf=1 m=8
+XM33 net24 hyst0_hv AGND AGND sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=2 nf=1 m=3
+XM67 Vop_stg2 Vom_stg2 AGND AGND sky130_fd_pr__nfet_g5v0d10v5 L=2 W=0.5 nf=1 m=1
+XM69 Vom_stg2 Vop_stg2 AGND AGND sky130_fd_pr__nfet_g5v0d10v5 L=2 W=0.5 nf=1 m=1
+XM15 bias_p en_hv AVDD AVDD sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=4 nf=2 m=4
+x2 AVDD trim2b_hv trim2_hv trim[2] AGND DVDD DGND level_shifter_up
+x4 AVDD trim1b_hv trim1_hv trim[1] AGND DVDD DGND level_shifter_up
+x5 AVDD trim0b_hv trim0_hv trim[0] AGND DVDD DGND level_shifter_up
+x6 AVDD enb_hv en_hv en AGND DVDD DGND level_shifter_up
+x7 AVDD hyst1b_hv hyst1_hv hyst[1] AGND DVDD DGND level_shifter_up
+x8 AVDD hyst0b_hv hyst0_hv hyst[0] AGND DVDD DGND level_shifter_up
+XM32 Vdiff enb_hv DGND DGND sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=2 nf=1 m=4
+XM34 casc_n bias_n AGND AGND sky130_fd_pr__nfet_g5v0d10v5 L=4 W=2 nf=1 m=2
+XM36 AVDD ibias casc_n AGND sky130_fd_pr__nfet_g5v0d10v5 L=1 W=2 nf=1 m=2
+XM3 Vfold_bot_p Vom AGND AGND sky130_fd_pr__nfet_g5v0d10v5 L=4 W=2 nf=1 m=12
+XM9 Vfold_p bias_p AVDD AVDD sky130_fd_pr__pfet_g5v0d10v5 L=4 W=2 nf=1 m=24
+XM10 Vfold_p bias_var_p AVDD AVDD sky130_fd_pr__pfet_g5v0d10v5 L=4 W=2 nf=1 m=56
+XM13 Vfold_bot_p bias_var_n AGND AGND sky130_fd_pr__nfet_g5v0d10v5 L=4 W=2 nf=1 m=28
+XM19 Vop casc_p Vfold_p AVDD sky130_fd_pr__pfet_g5v0d10v5 L=1 W=2 nf=1 m=80
+XM21 Vop casc_n Vfold_bot_p AGND sky130_fd_pr__nfet_g5v0d10v5 L=1 W=2 nf=1 m=40
+XM38 net7 Vinm net6 AGND sky130_fd_pr__nfet_g5v0d10v5 L=1.5 W=8 nf=1 m=1
+XM39 net7 Vinp net6 AGND sky130_fd_pr__nfet_g5v0d10v5 L=1.5 W=8 nf=1 m=1
+XM49 net7 bias_var_p AVDD AVDD sky130_fd_pr__pfet_g5v0d10v5 L=4 W=2 nf=1 m=4
+XM60 net9 bias_var_p AVDD AVDD sky130_fd_pr__pfet_g5v0d10v5 L=4 W=2 nf=1 m=4
+XM61 net8 bias_n AGND AGND sky130_fd_pr__nfet_g5v0d10v5 L=4 W=2 nf=1 m=2
+XM62 net50 bias_var_tailp AVDD AVDD sky130_fd_pr__pfet_g5v0d10v5 L=4 W=2 nf=1 m=4
+XM68 net48 bias_var_tailp AVDD AVDD sky130_fd_pr__pfet_g5v0d10v5 L=4 W=2 nf=1 m=4
+XM70 bias_var_n bias_var_n AGND AGND sky130_fd_pr__nfet_g5v0d10v5 L=4 W=2 nf=1 m=2
+XM8 Vfold_bot_m bias_var_n AGND AGND sky130_fd_pr__nfet_g5v0d10v5 L=4 W=2 nf=1 m=28
+XM11 Vfold_m bias_var_p AVDD AVDD sky130_fd_pr__pfet_g5v0d10v5 L=4 W=2 nf=1 m=56
+XM12 Vfold_m bias_p AVDD AVDD sky130_fd_pr__pfet_g5v0d10v5 L=4 W=2 nf=1 m=24
+XM14 Vfold_bot_m Vom AGND AGND sky130_fd_pr__nfet_g5v0d10v5 L=4 W=2 nf=1 m=12
+XM18 Vom casc_p Vfold_m AVDD sky130_fd_pr__pfet_g5v0d10v5 L=1 W=2 nf=1 m=80
+XM20 Vom casc_n Vfold_bot_m AGND sky130_fd_pr__nfet_g5v0d10v5 L=1 W=2 nf=1 m=40
+XM84 bias_var_tailp casc_n net8 AGND sky130_fd_pr__nfet_g5v0d10v5 L=1 W=2 nf=1 m=2
+XM85 bias_var_tailp casc_p net9 AVDD sky130_fd_pr__pfet_g5v0d10v5 L=1 W=2 nf=1 m=4
+XM86 bias_p casc_n net10 AGND sky130_fd_pr__nfet_g5v0d10v5 L=1 W=2 nf=1 m=2
+XM88 Vx_hyst_n casc_n net11 AGND sky130_fd_pr__nfet_g5v0d10v5 L=1 W=2 nf=1 m=8
+XM89 Vfold_m net35 net29 AGND sky130_fd_pr__nfet_g5v0d10v5 L=1.5 W=8 nf=1 m=4
+XM92 net13 bias_var_tailn AGND AGND sky130_fd_pr__nfet_g5v0d10v5 L=4 W=2 nf=1 m=6
+XM93 Vfold_p net34 net29 AGND sky130_fd_pr__nfet_g5v0d10v5 L=1.5 W=8 nf=1 m=4
+XM97 net29 casc_n net13 AGND sky130_fd_pr__nfet_g5v0d10v5 L=1 W=2 nf=1 m=6
+x1 AVDD trim3b_hv trim3_hv trim[3] AGND DVDD DGND level_shifter_up
+XM63 net21 bias_n net19 AGND sky130_fd_pr__nfet_g5v0d10v5 L=4 W=2 nf=1 m=1
+XM99 net14 net15 AVDD AVDD sky130_fd_pr__pfet_g5v0d10v5 L=4 W=2 nf=1 m=2
+XM101 net16 bias_n AGND AGND sky130_fd_pr__nfet_g5v0d10v5 L=4 W=2 nf=1 m=2
+XM102 net15 net15 net14 AVDD sky130_fd_pr__pfet_g5v0d10v5 L=1 W=2 nf=1 m=6
+XM103 casc_p casc_p net14 AVDD sky130_fd_pr__pfet_g5v0d10v5 L=4 W=2 nf=1 m=4
+XM104 casc_p casc_n net16 AGND sky130_fd_pr__nfet_g5v0d10v5 L=1 W=2 nf=1 m=2
+XM105 net15 casc_n net20 AGND sky130_fd_pr__nfet_g5v0d10v5 L=1 W=2 nf=1 m=1
+XM106 net17 bias_n AGND AGND sky130_fd_pr__nfet_g5v0d10v5 L=4 W=2 nf=1 m=2
+XM107 net6 casc_n net17 AGND sky130_fd_pr__nfet_g5v0d10v5 L=1 W=2 nf=1 m=2
+XM96 net18 bias_n net22 AGND sky130_fd_pr__nfet_g5v0d10v5 L=4 W=2 nf=1 m=1
+XM108 net23 casc_n net18 AGND sky130_fd_pr__nfet_g5v0d10v5 L=1 W=2 nf=1 m=1
+XM109 bias_var_p casc_p net7 AVDD sky130_fd_pr__pfet_g5v0d10v5 L=1 W=2 nf=1 m=4
+XM57 net19 bias_n AGND AGND sky130_fd_pr__nfet_g5v0d10v5 L=4 W=2 nf=1 m=1
+XM112 net20 casc_n net21 AGND sky130_fd_pr__nfet_g5v0d10v5 L=1 W=2 nf=1 m=1
+XM113 net22 bias_n AGND AGND sky130_fd_pr__nfet_g5v0d10v5 L=4 W=2 nf=1 m=1
+XM114 bias_var_p casc_n net23 AGND sky130_fd_pr__nfet_g5v0d10v5 L=1 W=2 nf=1 m=1
+XM115 Vx_hyst_n casc_n net12 AGND sky130_fd_pr__nfet_g5v0d10v5 L=1 W=2 nf=1 m=3
+XM118 net28 hyst0b_hv AVDD AVDD sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=2 nf=1 m=6
+XM119 net27 bias_p net28 AVDD sky130_fd_pr__pfet_g5v0d10v5 L=4 W=2 nf=1 m=6
+XM120 Vx_hyst_p casc_p net27 AVDD sky130_fd_pr__pfet_g5v0d10v5 L=1 W=2 nf=1 m=6
+XM121 net25 hyst1b_hv AVDD AVDD sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=2 nf=1 m=16
+XM122 net26 bias_p net25 AVDD sky130_fd_pr__pfet_g5v0d10v5 L=4 W=2 nf=1 m=18
+XM123 Vx_hyst_p casc_p net26 AVDD sky130_fd_pr__pfet_g5v0d10v5 L=1 W=2 nf=1 m=18
+XM124 Vfold_bot_p Voutb Vx_hyst_p AVDD sky130_fd_pr__pfet_g5v0d10v5 L=1 W=4 nf=1 m=8
+XM125 Vfold_bot_m Vout_int Vx_hyst_p AVDD sky130_fd_pr__pfet_g5v0d10v5 L=1 W=4 nf=1 m=8
+XM35 res_n_top res_n_top AVDD AVDD sky130_fd_pr__pfet_g5v0d10v5 L=4 W=4 nf=1 m=1
+XM37 net31 bias_n net30 AGND sky130_fd_pr__nfet_g5v0d10v5 L=4 W=2 nf=1 m=4
+XM41 net32 bias_n net33 AGND sky130_fd_pr__nfet_g5v0d10v5 L=4 W=2 nf=1 m=2
+XM42 net30 trim1_hv AGND AGND sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=2 nf=1 m=4
+XM43 net33 trim0_hv AGND AGND sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=2 nf=1 m=2
+XM46 res_n_bot casc_n net31 AGND sky130_fd_pr__nfet_g5v0d10v5 L=1 W=2 nf=1 m=4
+XM47 res_n_bot casc_n net32 AGND sky130_fd_pr__nfet_g5v0d10v5 L=1 W=2 nf=1 m=2
+XM50 net35 trim2_hv res_n_top AVDD sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=16 nf=4 m=1
+XM51 net34 trim2b_hv res_n_top AVDD sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=16 nf=4 m=1
+XM52 net34 trim2_hv res_n_bot AVDD sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=16 nf=4 m=1
+XM55 net35 trim2b_hv res_n_bot AVDD sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=16 nf=4 m=1
+XM56 net36 bias_n AGND AGND sky130_fd_pr__nfet_g5v0d10v5 L=4 W=2 nf=1 m=1
+XM64 res_n_top casc_n net36 AGND sky130_fd_pr__nfet_g5v0d10v5 L=1 W=2 nf=1 m=1
+XM65 net37 trim0_hv res_n_top AVDD sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=16 nf=4 m=1
+XM66 res_n_bot trim1_hv net37 AVDD sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=16 nf=4 m=1
+XR1 res_n_bot res_n_top AGND sky130_fd_pr__res_high_po_2p85 L=2.85*56 mult=1 m=1
+XM71 net41 trim3b_hv AVDD AVDD sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=2 nf=1 m=2
+XM72 net40 bias_p net41 AVDD sky130_fd_pr__pfet_g5v0d10v5 L=4 W=2 nf=1 m=4
+XM74 res_p_top casc_p net40 AVDD sky130_fd_pr__pfet_g5v0d10v5 L=1 W=2 nf=1 m=4
+XM80 net38 trim4b_hv AVDD AVDD sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=2 nf=1 m=4
+XM81 net39 bias_p net38 AVDD sky130_fd_pr__pfet_g5v0d10v5 L=4 W=2 nf=1 m=8
+XM82 res_p_top casc_p net39 AVDD sky130_fd_pr__pfet_g5v0d10v5 L=1 W=2 nf=1 m=8
+XM83 Vfold_bot_m net46 net44 AVDD sky130_fd_pr__pfet_g5v0d10v5 L=1.5 W=8 nf=1 m=4
+XM126 Vfold_bot_p net45 net44 AVDD sky130_fd_pr__pfet_g5v0d10v5 L=1.5 W=8 nf=1 m=4
+XM127 net42 bias_var_tailp AVDD AVDD sky130_fd_pr__pfet_g5v0d10v5 L=4 W=2 nf=1 m=12
+XM128 net44 casc_p net42 AVDD sky130_fd_pr__pfet_g5v0d10v5 L=1 W=2 nf=1 m=12
+XM129 net43 bias_p AVDD AVDD sky130_fd_pr__pfet_g5v0d10v5 L=4 W=2 nf=1 m=2
+XM130 res_p_bot casc_p net43 AVDD sky130_fd_pr__pfet_g5v0d10v5 L=1 W=2 nf=1 m=2
+XR2 res_p_bot res_p_top AGND sky130_fd_pr__res_high_po_2p85 L=2.85*56 mult=1 m=1
+XM131 res_p_bot res_p_bot AGND AGND sky130_fd_pr__nfet_g5v0d10v5 L=4 W=2 nf=1 m=1
+XM132 net45 trim5_hv res_p_top AGND sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=16 nf=4 m=1
+XM87 net49 bias_var_p AVDD AVDD sky130_fd_pr__pfet_g5v0d10v5 L=4 W=2 nf=1 m=4
+XM98 bias_var_tailn bias_var_tailn AGND AGND sky130_fd_pr__nfet_g5v0d10v5 L=4 W=2 nf=1 m=2
+XM100 net46 trim5b_hv res_p_top AGND sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=16 nf=4 m=1
+XM135 res_p_bot trim5b_hv net45 AGND sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=16 nf=4 m=1
+XM133 res_p_bot trim5_hv net46 AGND sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=16 nf=4 m=1
+XM137 net47 trim4b_hv res_p_bot AGND sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=16 nf=4 m=1
+XM136 res_p_top trim3b_hv net47 AGND sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=16 nf=4 m=1
+x3 AVDD trim4b_hv trim4_hv trim[4] AGND DVDD DGND level_shifter_up
+x9 AVDD trim5b_hv trim5_hv trim[5] AGND DVDD DGND level_shifter_up
+XM134 net56 casc_p net48 AVDD sky130_fd_pr__pfet_g5v0d10v5 L=1 W=2 nf=1 m=4
+XM138 net57 casc_p net49 AVDD sky130_fd_pr__pfet_g5v0d10v5 L=1 W=2 nf=1 m=4
+XM139 net51 bias_p AVDD AVDD sky130_fd_pr__pfet_g5v0d10v5 L=4 W=2 nf=1 m=2
+XM140 bias_var_tailp casc_p net50 AVDD sky130_fd_pr__pfet_g5v0d10v5 L=1 W=2 nf=1 m=4
+XM141 net7 bias_p net51 AVDD sky130_fd_pr__pfet_g5v0d10v5 L=4 W=2 nf=1 m=2
+Vmeas_var_tailp net56 bias_var_n 0
+.save i(vmeas_var_tailp)
+Vmeas_var_tailn net57 bias_var_tailn 0
+.save i(vmeas_var_tailn)
+XM77 net53 ibias net52 AGND sky130_fd_pr__nfet_g5v0d10v5 L=4 W=2 nf=1 m=1
+XM78 net54 ibias net53 AGND sky130_fd_pr__nfet_g5v0d10v5 L=4 W=2 nf=1 m=1
+XM79 ibias ibias net54 AGND sky130_fd_pr__nfet_g5v0d10v5 L=4 W=2 nf=1 m=1
+XM58 Vout Voutb DVDD DVDD sky130_fd_pr__pfet_01v8 L=0.15 W=2 nf=1 m=1
+XM59 Vout Voutb DGND DGND sky130_fd_pr__nfet_01v8 L=0.15 W=1 nf=1 m=1
+XM110 AGND AGND AGND AGND sky130_fd_pr__nfet_g5v0d10v5 L=1.5 W=8 nf=1 m=34
+XM111 AVDD AVDD AVDD AVDD sky130_fd_pr__pfet_g5v0d10v5 L=1.5 W=8 nf=1 m=36
+XM116 AGND AGND AGND AGND sky130_fd_pr__nfet_g5v0d10v5 L=4 W=2 nf=1 m=15
+XM117 AGND AGND AGND AGND sky130_fd_pr__nfet_g5v0d10v5 L=1 W=2 nf=1 m=14
+XM142 AVDD AVDD AVDD AVDD sky130_fd_pr__pfet_g5v0d10v5 L=4 W=2 nf=1 m=32
+XM143 AVDD AVDD AVDD AVDD sky130_fd_pr__pfet_g5v0d10v5 L=1 W=2 nf=1 m=32
+XR3 AGND AGND AGND sky130_fd_pr__res_high_po_2p85 L=2.85*11.2 mult=1 m=1
+XM144 casc_n casc_n casc_n AGND sky130_fd_pr__nfet_g5v0d10v5 L=1 W=2 nf=1 m=11
+XM145 net55 bias_n AGND AGND sky130_fd_pr__nfet_g5v0d10v5 L=4 W=2 nf=1 m=1
+XM146 bias_stg2 casc_n net55 AGND sky130_fd_pr__nfet_g5v0d10v5 L=1 W=2 nf=1 m=1
+XM147 bias_stg2 bias_stg2 AVDD AVDD sky130_fd_pr__pfet_g5v0d10v5 L=4 W=2 nf=1 m=2
+XM148 casc_p casc_p casc_p AVDD sky130_fd_pr__pfet_g5v0d10v5 L=1 W=2 nf=1 m=20
+XM149 AVDD AVDD AVDD AVDD sky130_fd_pr__pfet_g5v0d10v5 L=4 W=2 nf=1 m=12
+XR5 AGND AGND AGND sky130_fd_pr__res_high_po_2p85 L=2.85*11.2 mult=1 m=1
+XR7 AGND AGND AGND sky130_fd_pr__res_high_po_2p85 L=2.85*11.2 mult=1 m=1
+XR8 AGND AGND AGND sky130_fd_pr__res_high_po_2p85 L=2.85*11.2 mult=1 m=1
+* noconn trim0b_hv
+* noconn trim1b_hv
+* noconn trim3_hv
+* noconn trim4_hv
+.ends
+
+* expanding   symbol:  level_shifter_up.sym # of pins=7
+** sym_path: /home/tim/gits/cheetah_v3_analog/dependencies/sky130_ak_ip__comparator/xschem/level_shifter_up.sym
+** sch_path: /home/tim/gits/cheetah_v3_analog/dependencies/sky130_ak_ip__comparator/xschem/level_shifter_up.sch
+.subckt level_shifter_up VDD_HV xb_hv x_hv x_lv GND_HV VDD_LV GND_LV
+*.PININFO VDD_HV:I GND_HV:I x_lv:I x_hv:O xb_hv:O VDD_LV:I GND_LV:I
+XM65 xb_hv x_lv GND_HV GND_HV sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=1 nf=1 m=1
+XM66 x_hv xb_lv GND_HV GND_HV sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=1 nf=1 m=1
+XM67 xb_hv x_hv VDD_HV VDD_HV sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=0.5 nf=1 m=1
+XM68 x_hv xb_hv VDD_HV VDD_HV sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=0.5 nf=1 m=1
+XM1 xb_lv x_lv GND_LV GND_LV sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=1 nf=1 m=1
+XM3 xb_lv x_lv VDD_LV VDD_LV sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=2 nf=1 m=1
+.ends
+
+.end

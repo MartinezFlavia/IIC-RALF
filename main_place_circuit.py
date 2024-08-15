@@ -31,7 +31,7 @@ import os
 ###########################################################################
 
 DEFAULT_CIRCUIT_NAME = "DiffAmp"  #Name of the circuit
-START_MAGIC = True        #If True, Magic will be started, with the loaded placement
+START_MAGIC = False        #If True, Magic will be started, with the loaded placement
 
 ###########################################################################
 

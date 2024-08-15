@@ -1,0 +1,141 @@
+** sch_path: /home/brady/dev/sky130_be_ip__lsxo/xschem/sky130_be_ip__lsxo.sch
+.subckt sky130_be_ip__lsxo avdd avss dvdd dvss ibias ena standby dout xin xout
+*.PININFO avdd:B dout:O avss:B dvdd:B dvss:B ibias:I ena:I standby:I xin:I xout:O
+XM1 xout xin avss_ip avss_ip sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=4 nf=1 m=10
+XM2 xout vbreg avdd_ip avdd_ip sky130_fd_pr__pfet_g5v0d10v5 L=2 W=4 nf=1 m=10
+XR2 xout xin avss_ip sky130_fd_pr__res_xhigh_po_0p35 L=2530 mult=1 m=1
+XM5 avss_ip ena_33 avss avss sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=4 nf=1 m=5
+XM6 avdd_ip ena_b_33 avdd avdd sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=4 nf=1 m=5
+XM8 dvdd_ip standby_ip dvdd dvdd sky130_fd_pr__pfet_01v8 L=0.5 W=4 nf=1 m=10
+XM9 ibias_ip standby_33 ibias ibias sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=4 nf=1 m=1
+XM11 dvss_ip standby_b dvss dvss sky130_fd_pr__nfet_01v8 L=0.5 W=4 nf=1 m=10
+XC1 avdd_ip avss_ip sky130_fd_pr__cap_mim_m3_1 W=7 L=7 m=4
+XC2 dvdd_ip dvss_ip sky130_fd_pr__cap_mim_m3_1 W=10 L=10 m=21
+XC3 avss avdd sky130_fd_pr__cap_mim_m3_1 W=10 L=10 m=4
+XC4 dvdd dvss sky130_fd_pr__cap_mim_m3_1 W=10 L=10 m=4
+x7 dvdd dvss dout_ip dout_filt ena_ip standby_ip standby_b ripl_dly_clk_buf
+XM3 dout_ip standby_ip dvss dvss sky130_fd_pr__nfet_01v8 L=4 W=0.5 nf=1 m=1
+x3 avdd dvdd ena_33 ena_b_33 ena_ip dvss avss net1 level_shift
+x4 avdd dvdd standby_33 net2 standby_ip dvss avss standby_b level_shift
+x6 dvdd_ip dvss_ip xin xout ibias_ip dout_ip dout_amp
+x5 avdd_ip vbreg xin avss_ip bias_gen
+XM4 dout dout_filt dvss_ip dvss_ip sky130_fd_pr__nfet_01v8 L=1 W=0.75 nf=1 m=1
+XM7 dout dout_filt dvdd_ip dvdd_ip sky130_fd_pr__pfet_01v8 L=1 W=4 nf=1 m=1
+x1 ena dvss dvss dvdd dvdd ena_ip sky130_fd_sc_hd__buf_1
+x2 standby dvss dvss dvdd dvdd standby_ip sky130_fd_sc_hd__buf_1
+* noconn #net1
+* noconn #net2
+XRD1 avss_ip avss_ip avss_ip sky130_fd_pr__res_xhigh_po_0p35 L=110 mult=2 m=2
+XMD1 avss_ip xin avss_ip avss_ip sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=4 nf=1 m=2
+XD2 avss_ip xin sky130_fd_pr__diode_pw2nd_05v5 area=2.025e11 perim=1.8e6
+XD4 avss_ip xout sky130_fd_pr__diode_pw2nd_05v5 area=2.025e11 perim=1.8e6
+XD5 dvss ena sky130_fd_pr__diode_pw2nd_05v5 area=2.025e11 perim=1.8e6
+XD6 dvss standby sky130_fd_pr__diode_pw2nd_05v5 area=2.025e11 perim=1.8e6
+XMD2 xout vbreg xout avdd_ip sky130_fd_pr__pfet_g5v0d10v5 L=2 W=4 nf=1 m=1
+XD1 xin avdd_ip sky130_fd_pr__diode_pd2nw_05v5 area=2.025e11 perim=1.8e6
+XD3 xout avdd_ip sky130_fd_pr__diode_pd2nw_05v5 area=2.025e11 perim=1.8e6
+.ends
+
+* expanding   symbol:  ripl_dly_clk_buf.sym # of pins=7
+** sym_path: /home/brady/dev/sky130_be_ip__lsxo/xschem/ripl_dly_clk_buf.sym
+** sch_path: /home/brady/dev/sky130_be_ip__lsxo/xschem/ripl_dly_clk_buf.sch
+.subckt ripl_dly_clk_buf dvdd dvss clkin clkout ena stby stby_b
+*.PININFO dvdd:B dvss:B clkin:I clkout:O ena:I stby:I stby_b:I
+XM3 clkout clk_disable dvss dvss sky130_fd_pr__nfet_01v8 L=4 W=0.5 nf=1 m=1
+x3 stby_b stby_done_b ena ena_done_b stby dvss dvss dvdd dvdd clk_disable sky130_fd_sc_hd__a221o_1
+x2 dvdd dvss clkin stby_done_b stby_b ripple_dly_4
+x1 dvdd dvss clkin ena_done_b ena ripple_dly_4
+x5 clkin clk_disable dvss dvss dvdd dvdd clkout sky130_fd_sc_hd__einvn_0
+.ends
+
+
+* expanding   symbol:  level_shift.sym # of pins=8
+** sym_path: /home/brady/dev/sky130_be_ip__lsxo/xschem/level_shift.sym
+** sch_path: /home/brady/dev/sky130_be_ip__lsxo/xschem/level_shift.sch
+.subckt level_shift avdd dvdd out out_b in dvss avss in_b
+*.PININFO in:I avdd:B avss:B dvss:B dvdd:B out:O out_b:O in_b:O
+XM4 out in_b avss avss sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=3 nf=1 m=2
+XM3 out_b in avss avss sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=3 nf=1 m=2
+XM5 out_b out avdd avdd sky130_fd_pr__pfet_g5v0d10v5 L=4 W=1 nf=1 m=1
+XM6 out out_b avdd avdd sky130_fd_pr__pfet_g5v0d10v5 L=4 W=1 nf=1 m=1
+XM2 in_b in dvdd dvdd sky130_fd_pr__pfet_01v8 L=1 W=1 nf=1 m=1
+XM1 in_b in dvss dvss sky130_fd_pr__nfet_01v8 L=1 W=1 nf=1 m=1
+.ends
+
+
+* expanding   symbol:  dout_amp.sym # of pins=6
+** sym_path: /home/brady/dev/sky130_be_ip__lsxo/xschem/dout_amp.sym
+** sch_path: /home/brady/dev/sky130_be_ip__lsxo/xschem/dout_amp.sch
+.subckt dout_amp dvdd dvss xin xout ibias dout
+*.PININFO xin:I dvdd:B dvss:B dout:O ibias:I xout:I
+XM1 ibias ibias dvss dvss sky130_fd_pr__nfet_g5v0d10v5 L=2 W=2 nf=1 m=5
+XM2 vbp ibias dvss dvss sky130_fd_pr__nfet_g5v0d10v5 L=2 W=2 nf=1 m=1
+XM5 vn xin tail dvdd sky130_fd_pr__pfet_g5v0d10v5 L=2 W=4 nf=1 m=1
+XC1 inv_in xin_buf sky130_fd_pr__cap_mim_m3_1 W=10 L=10 m=12
+XM6 inv_m1 inv_in dvdd dvdd sky130_fd_pr__pfet_01v8 L=8 W=0.5 nf=1 m=1
+XM7 inv_m1 inv_in dvss dvss sky130_fd_pr__nfet_01v8 L=8 W=0.5 nf=1 m=1
+XM8 net1 net1 dvdd dvdd sky130_fd_pr__pfet_01v8 L=8 W=0.5 nf=1 m=1
+XM9 net1 net1 dvss dvss sky130_fd_pr__nfet_01v8 L=8 W=0.5 nf=1 m=1
+XR1 inv_in net1 dvss sky130_fd_pr__res_xhigh_po_0p35 L=990 mult=1 m=1
+XM10 inv_m2 inv_m1 dvdd dvdd sky130_fd_pr__pfet_01v8 L=1 W=0.5 nf=1 m=1
+XM11 inv_m2 inv_m1 dvss dvss sky130_fd_pr__nfet_01v8 L=1 W=0.5 nf=1 m=1
+XM12 dout inv_m2 dvdd dvdd sky130_fd_pr__pfet_01v8 L=1 W=0.5 nf=1 m=2
+XM13 dout inv_m2 dvss dvss sky130_fd_pr__nfet_01v8 L=1 W=0.5 nf=1 m=2
+XM16 tail vbp dvdd dvdd sky130_fd_pr__pfet_01v8 L=2 W=2 nf=1 m=10
+XM17 vbp vbp dvdd dvdd sky130_fd_pr__pfet_01v8 L=2 W=2 nf=1 m=1
+XM3 xin_buf xout tail dvdd sky130_fd_pr__pfet_g5v0d10v5 L=2 W=4 nf=1 m=1
+XM4 xin_buf vn dvss dvss sky130_fd_pr__nfet_01v8 L=2 W=4 nf=1 m=1
+XM18 vn vn dvss dvss sky130_fd_pr__nfet_01v8 L=2 W=4 nf=1 m=1
+XMD2 vn vn vn dvss sky130_fd_pr__nfet_01v8 L=2 W=4 nf=1 m=1
+XMD1 dvdd inv_m1 dvdd dvdd sky130_fd_pr__pfet_01v8 L=1 W=0.5 nf=1 m=1
+XMD4 dvss ibias dvss dvss sky130_fd_pr__nfet_g5v0d10v5 L=2 W=2 nf=1 m=2
+XMD3 dvdd vbp dvdd dvdd sky130_fd_pr__pfet_01v8 L=2 W=2 nf=1 m=5
+XMD5 vn xin vn dvdd sky130_fd_pr__pfet_g5v0d10v5 L=2 W=4 nf=1 m=1
+XMD6 xin_buf vn xin_buf dvss sky130_fd_pr__nfet_01v8 L=2 W=4 nf=1 m=1
+XMD7 xin_buf xout xin_buf dvdd sky130_fd_pr__pfet_g5v0d10v5 L=2 W=4 nf=1 m=1
+XMD8 dvss inv_m1 dvss dvss sky130_fd_pr__nfet_01v8 L=1 W=0.5 nf=1 m=1
+.ends
+
+
+* expanding   symbol:  bias_gen.sym # of pins=4
+** sym_path: /home/brady/dev/sky130_be_ip__lsxo/xschem/bias_gen.sym
+** sch_path: /home/brady/dev/sky130_be_ip__lsxo/xschem/bias_gen.sch
+.subckt bias_gen avdd vbreg xin avss
+*.PININFO xin:I avdd:B avss:B vbreg:O
+XM2 vbreg vg2 vrb avss sky130_fd_pr__nfet_g5v0d10v5 L=2 W=4 nf=1 m=4
+XM3 vbreg vbreg avdd avdd sky130_fd_pr__pfet_g5v0d10v5 L=2 W=4 nf=1 m=1
+XM4 vg1 vbreg avdd avdd sky130_fd_pr__pfet_g5v0d10v5 L=2 W=4 nf=1 m=1
+XM1 vg1 vg1 avss avss sky130_fd_pr__nfet_g5v0d10v5 L=2 W=4 nf=1 m=1
+XR2 vg2 vg1 avss sky130_fd_pr__res_xhigh_po_0p35 L=1968 mult=1 m=1
+XR3 avss vrb avss sky130_fd_pr__res_xhigh_po_0p35 L=150 mult=1 m=1
+XC3 avss vg2 sky130_fd_pr__cap_mim_m3_1 W=18 L=18 m=4
+XC1 vg1 xin sky130_fd_pr__cap_mim_m3_1 W=22 L=22 m=5
+XM5 icnode vg2 avss avss sky130_fd_pr__nfet_g5v0d10v5 L=1 W=1 nf=1 m=1
+XC2 avdd icnode sky130_fd_pr__cap_mim_m3_1 W=20 L=20 m=1
+XM6 vbreg icnode net3 avss sky130_fd_pr__nfet_g5v0d10v5 L=8 W=0.42 nf=1 m=1
+XM8 net1 net1 avss avss sky130_fd_pr__nfet_g5v0d10v5 L=8 W=0.42 nf=1 m=1
+XM7 net3 icnode net1 avss sky130_fd_pr__nfet_g5v0d10v5 L=8 W=0.42 nf=1 m=1
+XRD1 avss avss avss sky130_fd_pr__res_xhigh_po_0p35 L=82 mult=2 m=2
+XRD2 avss avss avss sky130_fd_pr__res_xhigh_po_0p35 L=75 mult=2 m=2
+XMD1 avdd vbreg avdd avdd sky130_fd_pr__pfet_g5v0d10v5 L=2 W=4 nf=1 m=4
+XMD2 net2 vbreg net2 avdd sky130_fd_pr__pfet_g5v0d10v5 L=2 W=4 nf=1 m=1
+XMD3 avss avss avss avss sky130_fd_pr__nfet_g5v0d10v5 L=2 W=4 nf=1 m=4
+XMD4 vbreg vg1 vbreg avss sky130_fd_pr__nfet_g5v0d10v5 L=2 W=4 nf=1 m=1
+.ends
+
+
+* expanding   symbol:  ripple_dly_4.sym # of pins=5
+** sym_path: /home/brady/dev/sky130_be_ip__lsxo/xschem/ripple_dly_4.sym
+** sch_path: /home/brady/dev/sky130_be_ip__lsxo/xschem/ripple_dly_4.sch
+.subckt ripple_dly_4 dvdd dvss clkin doneb ena
+*.PININFO clkin:I ena:I doneb:O dvdd:B dvss:B
+x2 gated_clk Qb1 ena dvss dvss dvdd dvdd net1 Qb1 sky130_fd_sc_hd__dfrbp_1
+x3 Qb1 Qb2 ena dvss dvss dvdd dvdd net2 Qb2 sky130_fd_sc_hd__dfrbp_1
+* noconn #net1
+* noconn #net2
+x4 Qb2 doneb ena dvss dvss dvdd dvdd net3 doneb sky130_fd_sc_hd__dfrbp_1
+x1 clkin doneb dvss dvss dvdd dvdd gated_clk sky130_fd_sc_hd__and2_0
+* noconn #net3
+.ends
+
+.end
