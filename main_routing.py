@@ -54,7 +54,7 @@ LOG_WIREPLAN = False                 #If True, the stats of the wire-planning it
 #########################################################################
 def main(CIRCUIT_NAME, PLAN_WIRES, N_PLANNING_ITERATIONS, GCELL_LENGTH, LAYERS):
 
-    I
+    
     #load the placed circuit 
     if CIRCUIT_NAME == None:    
         file = open(f"PlacementCircuits/{DEFAULT_CIRCUIT_NAME}_placement.pkl", 'rb')

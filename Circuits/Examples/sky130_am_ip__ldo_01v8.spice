@@ -1,5 +1,5 @@
 ** sch_path: /home/tim/gits/cheetah_v3_analog/dependencies/sky130_am_ip__ldo_01v8/xschem/sky130_am_ip__ldo_01v8.sch
-.subckt sky130_am_ip__ldo_01v8 AVDD VOUT AVSS ENA VREF_EXT SEL_EXT DVDD DVSS
+**.subckt sky130_am_ip__ldo_01v8 AVDD VOUT AVSS ENA VREF_EXT SEL_EXT DVDD DVSS
 *.PININFO ENA:I AVDD:I AVSS:I VOUT:O SEL_EXT:I VREF_EXT:I DVDD:I DVSS:I
 XM46 VX VBIAS_P AVDD AVDD sky130_fd_pr__pfet_g5v0d10v5 L=7 W=1 nf=1 m=1
 XM48 net2 net2 AVSS AVSS sky130_fd_pr__nfet_g5v0d10v5 L=7 W=1 nf=1 m=1
@@ -49,5 +49,5 @@ XM89 VPASS NENA AVSS AVSS sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=1 nf=1 m=1
 XM90 VDD_START NENA AVDD AVDD sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=1 nf=1 m=1
 x1 ENA DVDD DVSS DVSS AVDD AVDD ena_3v3 sky130_fd_sc_hvl__lsbuflv2hv_1
 x2 SEL_EXT DVDD DVSS DVSS AVDD AVDD sel_ext_3v3 sky130_fd_sc_hvl__lsbuflv2hv_1
-.ends
+**.ends
 .end

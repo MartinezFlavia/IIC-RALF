@@ -1,5 +1,5 @@
 ** sch_path: /home/tim/gits/sky130_ef_ip__samplehold/xschem/follower_amp.sch
-.subckt follower_amp vdd out ena vss in vsub
+**.subckt follower_amp vdd out ena vss in vsub
 *.PININFO in:I vdd:I vss:I out:O ena:I vsub:I
 XM4 pdrv1 net1 vdd vdd sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=2 nf=2 m=1
 XM5 vdd net1 net1 vdd sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=2 nf=2 m=1
@@ -26,5 +26,5 @@ XM11 pdrv2 in vcomn2 vss sky130_fd_pr__nfet_05v0_nvt L=0.9 W=1 nf=1 m=1
 XM9 net3 out vcomn2 vss sky130_fd_pr__nfet_05v0_nvt L=0.9 W=1 nf=1 m=1
 XM8 vcomn1 nbias vss vss sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=1 nf=1 m=1
 XR2 net4 vdd vss sky130_fd_pr__res_xhigh_po_0p35 L=35 mult=1 m=1
-.ends
+**.ends
 .end

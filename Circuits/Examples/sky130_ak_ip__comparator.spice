@@ -1,5 +1,5 @@
 ** sch_path: /home/tim/gits/cheetah_v3_analog/dependencies/sky130_ak_ip__comparator/xschem/sky130_ak_ip__comparator.sch
-.subckt sky130_ak_ip__comparator DVDD AVDD AGND Vinp Vout Vinm en hyst[1] hyst[0] trim[5] trim[4] trim[3] trim[2] trim[1] trim[0]
+**.subckt sky130_ak_ip__comparator DVDD AVDD AGND Vinp Vout Vinm en hyst[1] hyst[0] trim[5] trim[4] trim[3] trim[2] trim[1] trim[0]
 + ibias DGND
 *.PININFO Vinp:I Vinm:I AVDD:I AGND:I en:I hyst[1:0]:I trim[5:0]:I Vout:O DGND:I ibias:I DVDD:I
 XM7 bias_n bias_n AGND AGND sky130_fd_pr__nfet_g5v0d10v5 L=4 W=2 nf=1 m=2
@@ -187,6 +187,6 @@ XM67 xb_hv x_hv VDD_HV VDD_HV sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=0.5 nf=1 m=1
 XM68 x_hv xb_hv VDD_HV VDD_HV sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=0.5 nf=1 m=1
 XM1 xb_lv x_lv GND_LV GND_LV sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=1 nf=1 m=1
 XM3 xb_lv x_lv VDD_LV VDD_LV sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=2 nf=1 m=1
-.ends
+**.ends
 
 .end

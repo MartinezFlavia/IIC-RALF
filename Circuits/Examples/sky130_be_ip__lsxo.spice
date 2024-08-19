@@ -1,5 +1,5 @@
 ** sch_path: /home/brady/dev/sky130_be_ip__lsxo/xschem/sky130_be_ip__lsxo.sch
-.subckt sky130_be_ip__lsxo avdd avss dvdd dvss ibias ena standby dout xin xout
+**.subckt sky130_be_ip__lsxo avdd avss dvdd dvss ibias ena standby dout xin xout
 *.PININFO avdd:B dout:O avss:B dvdd:B dvss:B ibias:I ena:I standby:I xin:I xout:O
 XM1 xout xin avss_ip avss_ip sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=4 nf=1 m=10
 XM2 xout vbreg avdd_ip avdd_ip sky130_fd_pr__pfet_g5v0d10v5 L=2 W=4 nf=1 m=10
@@ -136,6 +136,6 @@ x3 Qb1 Qb2 ena dvss dvss dvdd dvdd net2 Qb2 sky130_fd_sc_hd__dfrbp_1
 x4 Qb2 doneb ena dvss dvss dvdd dvdd net3 doneb sky130_fd_sc_hd__dfrbp_1
 x1 clkin doneb dvss dvss dvdd dvdd gated_clk sky130_fd_sc_hd__and2_0
 * noconn #net3
-.ends
+**.ends
 
 .end

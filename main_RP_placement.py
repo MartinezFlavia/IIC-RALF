@@ -1,4 +1,4 @@
-# ========================================================================
+                                                                                                                                                                                    # ========================================================================
 #
 # Script to generate a placement for a circuit, by using simulated annealing.
 #
@@ -52,31 +52,28 @@ SHOW_STATS = True                   #Show statistics of the placement
 
 #########################################################################
 
-def main(circuit_name, circuit_file_name, net_rules_file_name):
+def main(CIRCUIT_NAME):
 
     print("Simulated Annealing Based placement:")
+    if CIRCUIT_NAME == None:
+        CIRCUIT_NAME = DEFAULT_CIRCUIT_NAME
 
     if USE_LOGGER:
         #Setup a logger
-        logHandler = RotatingFileHandler(filename=f"Logs/{DEFAULT_CIRCUIT_NAME}_placement.log", mode='w', maxBytes=100e3, backupCount=1, encoding='utf-8')
+        logHandler = RotatingFileHandler(filename=f"Logs/{CIRCUIT_NAME}_placement.log", mode='w', maxBytes=100e3, backupCount=1, encoding='utf-8')
         logHandler.setLevel(logging.DEBUG)
         logging.basicConfig(handlers=[logHandler], level=logging.DEBUG, format="[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)d] %(message)s")
 
     # Get user input or use default values
-    if circuit_file_name == None:
-        circuit_file_name = input(f"Enter the circuit file name (default: {DEFAULT_CIRCUIT_NAME}): ") or DEFAULT_CIRCUIT_NAME
-    circuit_file = f"Circuits/Examples/{circuit_file_name}.spice"
+   
+    CIRCUIT_FILE_NAME = f"Circuits/Examples/{CIRCUIT_NAME}.spice"
 
-    if circuit_name == None:    
-        circuit_name = input(f"Enter the circuit name (default: {DEFAULT_CIRCUIT_NAME}): ") or DEFAULT_CIRCUIT_NAME
-
-    if net_rules_file_name == None:    
-        net_rules_file_name = input(f"Enter the net rules file name (default: net_rules_{DEFAULT_CIRCUIT_NAME}): ") or f"net_rules_{DEFAULT_CIRCUIT_NAME}"
-    net_rules_file = f"NetRules/{net_rules_file_name}.json"
+    net_rules_file_name = f"net_rules_{CIRCUIT_NAME}"
+    NET_RULES_FILE = f"NetRules/{net_rules_file_name}.json"
 
     print("Setting up the circuit...")
     # Setup the circuit
-    C = setup_circuit(circuit_file, circuit_name, [], net_rules_file=net_rules_file)
+    C = setup_circuit(CIRCUIT_FILE_NAME, CIRCUIT_NAME, [], NET_RULES_FILE)
     
     #include primitive compositions into the circuit
     include_primitives_hierarchical(C)
@@ -103,4 +100,4 @@ def main(circuit_name, circuit_file_name, net_rules_file_name):
     file.close()
     
 if __name__=='__main__':
-    main(None, None, None)
+    main(None)

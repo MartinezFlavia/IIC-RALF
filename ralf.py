@@ -49,5 +49,5 @@ main_place_circuit.main(args.circuit_name)
 print("------------------Routing:-----------------")
 
 
-main_routing.py(args.circuit_name, args.PLAN_WIRES, args.N_PLANNING_ITERATIONS, args.GCELL_LENGTH, args.LAYERS)
+main_routing.main(args.circuit_name, args.PLAN_WIRES, args.N_PLANNING_ITERATIONS, args.GCELL_LENGTH, args.LAYERS)
 
