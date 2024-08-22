@@ -1,0 +1,25 @@
+[    
+    ["MinNetWireWidth",
+    {
+        "net" : "vdd",
+        "min_width" : 28
+    }
+    ],
+    ["MinNetWireWidth",
+    {
+        "net" : "vss",
+        "min_width" : 28
+    }
+    ],
+    
+    ["Ports",
+    {
+	"nets" : ["out_p", "vdd", "in_hi", "in_p", "vss", "in_n", "out_n"]
+    }
+    ],
+    ["PowerNets",
+    {
+        "nets" : ["vdd", "vss"]
+    }
+    ]        
+]

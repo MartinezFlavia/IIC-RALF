@@ -1,0 +1,63 @@
+** sch_path: /home/tim/gits/cheetah_v3_analog/dependencies/sky130_ef_ip__ccomp3v/xschem/sky130_ef_ip__ccomp3v.sch
+**.subckt sky130_ef_ip__ccomp3v VOUT DVDD DVSS VDD VSS VINP VINM
+*.PININFO VDD:I VOUT:O VSS:I VINP:I VINM:I DVDD:I DVSS:I
+x1 VDD VBP VBN VSS VINP VOUT VINM DVDD comparator_core
+x2 VDD VSS VBP VBN comparator_bias
+.ends
+
+* expanding   symbol:  comparator_core.sym # of pins=8
+** sym_path: /home/tim/gits/cheetah_v3_analog/dependencies/sky130_ef_ip__ccomp3v/xschem/comparator_core.sym
+** sch_path: /home/tim/gits/cheetah_v3_analog/dependencies/sky130_ef_ip__ccomp3v/xschem/comparator_core.sch
+.subckt comparator_core VDD VBP VBN VSS VINP VOUT VINM DVDD
+*.PININFO VINP:I VINM:I VBN:I VBP:I VDD:B VSS:B VOUT:O DVDD:B
+XM3 net10 VBN VSS VSS sky130_fd_pr__nfet_g5v0d10v5 L=2 W=5 nf=1 m=2
+XM4 net4 net4 VSS VSS sky130_fd_pr__nfet_g5v0d10v5 L=3 W=5 nf=1 m=2
+XM5 net11 net4 VSS VSS sky130_fd_pr__nfet_g5v0d10v5 L=3 W=15 nf=3 m=2
+XM6 net3 net3 VDD VDD sky130_fd_pr__pfet_g5v0d10v5 L=2 W=5 nf=1 m=2
+XM7 net2 net2 VDD VDD sky130_fd_pr__pfet_g5v0d10v5 L=2 W=5 nf=1 m=2
+XM8 net4 net3 VDD VDD sky130_fd_pr__pfet_g5v0d10v5 L=3 W=5 nf=1 m=2
+XM9 VOUTANALOG net2 VDD VDD sky130_fd_pr__pfet_g5v0d10v5 L=3 W=15 nf=3 m=2
+XM10 net6 VINM net5 VDD sky130_fd_pr__pfet_g5v0d10v5 L=2 W=5 nf=1 m=4
+XM11 net7 VINP net5 VDD sky130_fd_pr__pfet_g5v0d10v5 L=2 W=5 nf=1 m=4
+XM12 net12 VBP VDD VDD sky130_fd_pr__pfet_g5v0d10v5 L=2 W=5 nf=1 m=2
+XM13 net8 net8 VDD VDD sky130_fd_pr__pfet_g5v0d10v5 L=2 W=5 nf=1 m=2
+XM14 VOUTANALOG net8 VDD VDD sky130_fd_pr__pfet_g5v0d10v5 L=2 W=15 nf=3 m=2
+XM15 net6 net6 VSS VSS sky130_fd_pr__nfet_g5v0d10v5 L=2 W=5 nf=1 m=2
+XM16 net7 net7 VSS VSS sky130_fd_pr__nfet_g5v0d10v5 L=2 W=5 nf=1 m=2
+XM17 net8 net6 VSS VSS sky130_fd_pr__nfet_g5v0d10v5 L=2 W=5 nf=1 m=2
+XM18 VOUTANALOG net7 VSS VSS sky130_fd_pr__nfet_g5v0d10v5 L=2 W=15 nf=3 m=2
+XM19 net9 VOUTANALOG VDD VDD sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=20 nf=4 m=1
+XM20 net9 VOUTANALOG VSS VSS sky130_fd_pr__nfet_g5v0d10v5 L=2 W=5 nf=1 m=1
+XM21 VOUT net9 DVDD VDD sky130_fd_pr__pfet_g5v0d10v5 L=2 W=10 nf=1 m=1
+XM22 VOUT net9 VSS VSS sky130_fd_pr__nfet_g5v0d10v5 L=2 W=5 nf=1 m=1
+XM23 net1 VSS VSS VSS sky130_fd_pr__nfet_g5v0d10v5 L=2 W=5 nf=1 m=2
+XM24 net5 VDD VDD VDD sky130_fd_pr__pfet_g5v0d10v5 L=2 W=5 nf=1 m=2
+XM25 VSS VSS VSS VSS sky130_fd_pr__nfet_g5v0d10v5 L=2 W=5 nf=1 m=11
+XM26 VDD VDD VDD VDD sky130_fd_pr__pfet_g5v0d10v5 L=2 W=5 nf=1 m=11
+XM1 net3 VINM net1 VSS sky130_fd_pr__nfet_g5v0d10v5 L=2 W=5 nf=1 m=4
+XM2 net2 VINP net1 VSS sky130_fd_pr__nfet_g5v0d10v5 L=2 W=5 nf=1 m=4
+XM27 net1 VBP net10 VSS sky130_fd_pr__nfet_g5v0d10v5 L=8 W=5 nf=1 m=2
+XM28 VOUTANALOG VBP net11 VSS sky130_fd_pr__nfet_g5v0d10v5 L=1.75 W=5 nf=1 m=2
+XM29 net5 VBN net12 VDD sky130_fd_pr__pfet_g5v0d10v5 L=8 W=5 nf=1 m=2
+.ends
+
+
+* expanding   symbol:  comparator_bias.sym # of pins=4
+** sym_path: /home/tim/gits/cheetah_v3_analog/dependencies/sky130_ef_ip__ccomp3v/xschem/comparator_bias.sym
+** sch_path: /home/tim/gits/cheetah_v3_analog/dependencies/sky130_ef_ip__ccomp3v/xschem/comparator_bias.sch
+.subckt comparator_bias VDD VSS VBP VBN
+*.PININFO VBP:O VBN:O VDD:B VSS:B
+XM3 net1 net2 VDD VDD sky130_fd_pr__pfet_g5v0d10v5 L=2 W=20 nf=1 m=1
+XM4 VBN net1 net2 VDD sky130_fd_pr__pfet_g5v0d10v5 L=2 W=20 nf=1 m=1
+XM5 VBN VBN net2 VDD sky130_fd_pr__pfet_g5v0d10v5 L=15 W=1 nf=1 m=1
+XM7 VBP VBP VDD VDD sky130_fd_pr__pfet_g5v0d10v5 L=1 W=4 nf=1 m=1
+XM1 VBN VBN VSS VSS sky130_fd_pr__nfet_g5v0d10v5 L=2 W=5 nf=1 m=1
+XM2 net1 VBN VSS VSS sky130_fd_pr__nfet_g5v0d10v5 L=2 W=5 nf=1 m=1
+XM6 VBP VBN VSS VSS sky130_fd_pr__nfet_g5v0d10v5 L=2 W=5 nf=1 m=1
+XM8 VBN VSS VSS VSS sky130_fd_pr__nfet_g5v0d10v5 L=2 W=5 nf=1 m=1
+XM9 net1 VSS VSS VSS sky130_fd_pr__nfet_g5v0d10v5 L=2 W=5 nf=1 m=1
+XM10 VBP VSS VSS VSS sky130_fd_pr__nfet_g5v0d10v5 L=2 W=5 nf=1 m=1
+XR2 net2 VDD VDD sky130_fd_pr__res_high_po_1p41 L=140 mult=1 m=1
+**.ends
+
+.end

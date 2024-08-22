@@ -1,0 +1,37 @@
+[    
+    ["MinNetWireWidth",
+    {
+        "net" : "dvss",
+        "min_width" : 28
+    }
+    ],
+    ["MinNetWireWidth",
+    {
+        "net" : "avss",
+        "min_width" : 28
+    }
+    ],
+    ["MinNetWireWidth",
+    {
+        "net" : "avdd",
+        "min_width" : 28
+    }
+    ],
+    ["MinNetWireWidth",
+    {
+        "net" : "dvdd",
+        "min_width" : 28
+    }
+    ],
+    
+    ["Ports",
+    {
+	"nets" : ["avdd", "dvdd", "ena", "avss", "vtrip[0]", "vtrip[1]", "vtrip[2]", "vtrip[3]", "ovout", "ibias", "vbg", "avss"]
+    }
+    ],
+    ["PowerNets",
+    {
+        "nets" : ["avdd", "avss"]
+    }
+    ]        
+]

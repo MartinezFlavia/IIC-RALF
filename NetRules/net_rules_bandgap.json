@@ -1,0 +1,25 @@
+[    
+    
+    ["MinNetWireWidth",
+    {
+        "net" : "vdd",
+        "min_width" : 28
+    }
+    ],
+    ["MinNetWireWidth",
+    {
+        "net" : "vss",
+        "min_width" : 28
+    }
+    ],
+    ["Ports",
+    {
+        "nets" : ["vdd", "vss", "vbg", "bias", "trim_0_","trim_1_","trim_2_","trim_3_","trim_4_","trim_5_","trim_6_","trim_7_", "trim_8_","trim_9_","trim_10_","trim_11_","trim_12_","trim_13_", "trim_14_","trim_15_"]
+    }
+    ],
+    ["PowerNets",
+    {
+        "nets" : ["vdd", "vss"]
+    }
+    ]        
+]
