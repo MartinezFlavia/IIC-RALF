@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # ========================================================================
 #
 #   Script to place a already placed circuit in Magic.
@@ -32,28 +31,36 @@ import os
 
 ###########################################################################
 
-CIRCUIT_NAME = "DiffAmp"  #Name of the circuit
-START_MAGIC = True        #If True, Magic will be started, with the loaded placement
+DEFAULT_CIRCUIT_NAME = "DiffAmp"  #Name of the circuit
+START_MAGIC = False        #If True, Magic will be started, with the loaded placement
 
 ###########################################################################
 
 #load the placed circuit 
-file = open(f"PlacementCircuits/{CIRCUIT_NAME}_placement.pkl", 'rb')
-die : MagicDie
-die = pickle.load(file)
-file.close()
 
-#start magic as a batch process
-M = Magic(None)
- 
-#get the placed circuit
-circuit = die.circuit
+def main(circuit_name):
+    if circuit_name == None:
+        circuit_name = DEFAULT_CIRCUIT_NAME
+    file = open(f"PlacementCircuits/{circuit_name}_placement.pkl", 'rb')
+        
+    die : MagicDie
+    die = pickle.load(file)
+    file.close()
 
-#instantiate the circuit-devices in Magic
-instantiate_circuit(circuit, M, path='Magic/Devices')
+    #get the placed circuit
+    circuit = die.circuit
 
-#place the circuit
-place_circuit(CIRCUIT_NAME, circuit, M, debug=False)
+    #start magic as a batch process
+    M = Magic(circuit)
 
-if START_MAGIC:
-    os.system(f'magic Magic/Placement/{CIRCUIT_NAME}.mag')
+    #instantiate the circuit-devices in Magic
+    instantiate_circuit(circuit, M, path='Magic/Devices')
+
+    #place the circuit
+    place_circuit(circuit_name, circuit, M, debug=False)
+
+    if START_MAGIC:
+        os.system(f'magic Magic/Placement/{circuit_name}.mag')
+
+if __name__ == '__main__':
+    main(None)

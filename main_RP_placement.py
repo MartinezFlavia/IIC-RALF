@@ -39,9 +39,9 @@ import pickle
 #########################################################################
 
 #global variables to control the placement
-CIRCUIT_FILE = "Circuits/Examples/DiffAmp.spice"    #Input spice-netlist
-CIRCUIT_NAME = "DiffAmp"                            #Name of the circuit
-NET_RULES_FILE = "NetRules/net_rules_DiffAmp.json"  #Net-rules definition file
+DEFAULT_CIRCUIT_NAME = "DiffAmp"                            # Name of the circuit
+DEFAULT_CIRCUIT_FILE = f"Circuits/Examples/{DEFAULT_CIRCUIT_NAME}.spice"    # Input spice-netlist
+DEFAULT_NET_RULES_FILE = f"NetRules/net_rules_{DEFAULT_CIRCUIT_NAME}.json"  # Net-rules definition file
 N_PLACEMENTS = 1000                                 #Number of trial placements done per circuit/subcircuit
 
 USE_LOGGER = False                   #If True, debug information will be logged under "Logs/{CIRCUIT_NAME}_placement.log".
@@ -53,18 +53,30 @@ SHOW_STATS = True                   #Show statistics of the placement
 
 #########################################################################
 
-def main():
+def main(CIRCUIT_NAME):
+
+    print("Simulated Annealing Based placement:")
+    if CIRCUIT_NAME == None:
+        CIRCUIT_NAME = DEFAULT_CIRCUIT_NAME
 
     if USE_LOGGER:
         #Setup a logger
         logHandler = RotatingFileHandler(filename=f"Logs/{CIRCUIT_NAME}_placement.log", mode='w', maxBytes=100e3, backupCount=1, encoding='utf-8')
         logHandler.setLevel(logging.DEBUG)
         logging.basicConfig(handlers=[logHandler], level=logging.DEBUG, format="[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)d] %(message)s")
+
+    # Get user input or use default values
+
+    CIRCUIT_FILE_NAME = f"Circuits/Examples/{CIRCUIT_NAME}.spice"
+
+    net_rules_file_name = f"net_rules_{CIRCUIT_NAME}"
+    NET_RULES_FILE = f"NetRules/{net_rules_file_name}.json"
     
     M = Magic(None)
 
-    #setup the circuit
-    C = setup_circuit(CIRCUIT_FILE, M, CIRCUIT_NAME, [], net_rules_file=NET_RULES_FILE)
+    print("Setting up the circuit...")
+    # Set up the circuit
+    C = setup_circuit(CIRCUIT_FILE_NAME, M, CIRCUIT_NAME, [], NET_RULES_FILE)
     
     #include primitive compositions into the circuit
     include_primitives_hierarchical(C)
@@ -91,4 +103,4 @@ def main():
     file.close()
     
 if __name__=='__main__':
-    main()
+    main(None)

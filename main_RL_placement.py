@@ -51,26 +51,22 @@ SHOW_STATS = True                   # Show statistics of the placement
 
 #########################################################################
 
-def main():
+def main(circuit_name):
 
     print("Reinforcement learning based placement:")
 
+    if circuit_name == None:
+        circuit_name = input(f"Enter the circuit file name (default: {DEFAULT_CIRCUIT_NAME}): ") or DEFAULT_CIRCUIT_NAME
+
+    circuit_file = f"Circuits/Examples/{circuit_name}.spice"
+    net_rules_file = f"NetRules/net_rules_{circuit_name}.json"
+
     if USE_LOGGER:
         # Setup a logger
-        logHandler = RotatingFileHandler(filename=f"Logs/{DEFAULT_CIRCUIT_NAME}_placement.log", mode='w', maxBytes=100e3, backupCount=1, encoding='utf-8')
+        logHandler = RotatingFileHandler(filename=f"Logs/{circuit_name}_placement.log", mode='w', maxBytes=100e3, backupCount=1, encoding='utf-8')
         logHandler.setLevel(logging.DEBUG)
         logging.basicConfig(handlers=[logHandler], level=logging.DEBUG, format="[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)d] %(message)s")
     
-    # Get user input or use default values
-    if len(sys.argv) <= 1:
-        circuit_file_name = input(f"Enter the circuit file name (default: {DEFAULT_CIRCUIT_NAME}): ") or DEFAULT_CIRCUIT_NAME
-    else:
-        circuit_file_name = sys.argv[1]
-    circuit_file = f"Circuits/Examples/{circuit_file_name}.spice"
-    circuit_name = input(f"Enter the circuit name (default: {DEFAULT_CIRCUIT_NAME}): ") or DEFAULT_CIRCUIT_NAME
-    net_rules_file_name = input(f"Enter the net rules file name (default: net_rules_{DEFAULT_CIRCUIT_NAME}): ") or f"net_rules_{DEFAULT_CIRCUIT_NAME}"
-    net_rules_file = f"NetRules/{net_rules_file_name}.json"
-
     print("Setting up the circuit...")
     # Set up the process to communicate with magic
     M = Magic(None)
@@ -115,4 +111,4 @@ def main():
     
 
 if __name__ == '__main__':
-    main()
+    main(None)

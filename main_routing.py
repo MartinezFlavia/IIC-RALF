@@ -39,12 +39,12 @@ from PDK.PDK import global_pdk
 
 #########################################################################
 
-CIRCUIT_NAME = "DiffAmp"            #Name of the circuit
+DEFAULT_CIRCUIT_NAME = "DiffAmp"            #Name of the circuit
 
-PLAN_WIRES = True                   #If True, before detail-routing, wire-planning (global-routing) will be performed
-N_PLANNING_ITERATIONS = 15          #Number of wire-planning iterations
-GCELL_LENGTH = 150                  #Length of a wire-planning cell (in units of lambda)
-LAYERS = ['m1','m2','m3','m4']      #Layers which will be used for wire-planning
+DEFAULT_PLAN_WIRES = True                   #If True, before detail-routing, wire-planning (global-routing) will be performed
+DEFAULT_N_PLANNING_ITERATIONS = 15          #Number of wire-planning iterations
+DEFAULT_GCELL_LENGTH = 150                  #Length of a wire-planning cell (in units of lambda)
+DEFAULT_LAYERS = ['m1','m2','m3','m4']      #Layers which will be used for wire-planning
 
 SHOW_STATS = True                    #If True, statistics of the routing will be printed
 DESTINATION_PATH = 'Magic/Routing/'  #Destination path of the routing file
@@ -52,40 +52,54 @@ PLOT_RESULT = False                  #If True, the result will be plotted
 LOG_WIREPLAN = False                 #If True, the stats of the wire-planning iterations will be logged to a csv file
 
 #########################################################################
+def main(CIRCUIT_NAME, PLAN_WIRES, N_PLANNING_ITERATIONS, GCELL_LENGTH, LAYERS):
 
+    
+    #load the placed circuit 
+    if CIRCUIT_NAME == None:    
+        file = open(f"PlacementCircuits/{DEFAULT_CIRCUIT_NAME}_placement.pkl", 'rb')
+    else:
+        file = open(f"PlacementCircuits/{CIRCUIT_NAME}_placement.pkl", 'rb')
 
-#load the placed circuit 
-file = open(f"PlacementCircuits/{CIRCUIT_NAME}_placement.pkl", 'rb')
-die : MagicDie
-die = pickle.load(file)
-file.close()
+    die : MagicDie
+    die = pickle.load(file)
+    file.close()
 
-#setup obstacles from the die
-die_obstacles = DieObstacles(die)
+    #setup obstacles from the die
+    die_obstacles = DieObstacles(die)
 
-#get the placed circuit
-circuit = die.circuit
+    #get the placed circuit
+    circuit = die.circuit
 
-#setup a axis for plotting
-if PLOT_RESULT:
-    fig, ax = plt.subplots(1)
-    ax.set_aspect('equal')
-    ax.plot()
-    cm = plt.get_cmap('Set1')
-    for layer in global_pdk.metal_layers.values():
-        color = cm(hash(layer)%9)
-        ax.plot([], color=color, label=str(layer), linewidth=10, alpha=0.5)
-    fig.legend(loc='right')
-else:
-    ax = None
+    #setup a axis for plotting
+    if PLOT_RESULT:
+        fig, ax = plt.subplots(1)
+        ax.set_aspect('equal')
+        ax.plot()
+        cm = plt.get_cmap('Set1')
+        for layer in global_pdk.metal_layers.values():
+            color = cm(hash(layer)%9)
+            ax.plot([], color=color, label=str(layer), linewidth=10, alpha=0.5)
+        fig.legend(loc='right')
+    else:
+        ax = None
 
-start = time.time()
-#route the circuit
-route(circuit=circuit, routing_name=CIRCUIT_NAME, plan_wires=PLAN_WIRES, 
-      planning_iterations=N_PLANNING_ITERATIONS, gcell_length=GCELL_LENGTH, use_layers=LAYERS,
-      destination_path=DESTINATION_PATH, show_stats=SHOW_STATS, ax=ax, log_wireplan=LOG_WIREPLAN)
+    start = time.time()
+    #route the circuit
 
-print(f"Took {round((time.time()-start)*1e3,2)}ms")
+    if PLAN_WIRES == None and CIRCUIT_NAME== None and GCELL_LENGTH ==None and LAYERS == None:
+        route(circuit=circuit, routing_name=DEFAULT_CIRCUIT_NAME, plan_wires=DEFAULT_PLAN_WIRES, 
+            planning_iterations=N_PLANNING_ITERATIONS, gcell_length=DEFAULT_GCELL_LENGTH, use_layers=DEFAULT_LAYERS,
+            destination_path=DESTINATION_PATH, show_stats=SHOW_STATS, ax=ax, log_wireplan=LOG_WIREPLAN)
+    else:
+        route(circuit=circuit, routing_name=CIRCUIT_NAME, plan_wires=PLAN_WIRES, 
+            planning_iterations=N_PLANNING_ITERATIONS, gcell_length=GCELL_LENGTH, use_layers=LAYERS,
+            destination_path=DESTINATION_PATH, show_stats=SHOW_STATS, ax=ax, log_wireplan=LOG_WIREPLAN)
+        
+    print(f"Took {round((time.time()-start)*1e3,2)}ms")
 
-if PLOT_RESULT:
-    plt.show()
+    if PLOT_RESULT:
+        plt.show()
+
+if __name__ == '__main__':
+    main(None, None, None, None, None)
