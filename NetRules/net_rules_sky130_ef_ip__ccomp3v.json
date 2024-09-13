@@ -7,12 +7,6 @@
     ],
     ["MinNetWireWidth",
     {
-        "net" : "DVSS",
-        "min_width" : 28
-    }
-    ],
-    ["MinNetWireWidth",
-    {
         "net" : "VSS",
         "min_width" : 28
     }
@@ -25,7 +19,7 @@
     ],
     ["Ports",
     {
-	"nets" : ["VOUT", "DVDD", "DVSS", "VDD", "VSS", "VINP", "VINM"]
+	"nets" : ["VOUT", "DVDD", "VDD", "VSS", "VINP", "VINM"]
     }
     ],
     ["PowerNets",

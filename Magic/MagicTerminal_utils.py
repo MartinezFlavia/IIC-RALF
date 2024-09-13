@@ -81,12 +81,38 @@ def get_terminals_MOS(cell : Cell) -> MagicTerminal:
     #    gate_rects = merge_rects(gate_rects, direction=0)
 
     #get the drain/source and bulk rectangles
-    if 'pmos' in cell._layer_stack:
-        drain_source_rects = cell.get_overlapping_rectangles('pdiffc', 'pdiff')
-        bulk_rects = cell.get_overlapping_rectangles('nsubdiffcont', 'locali')
+
+    # NOTE: This is a technology-dependent hack that needs to be removed.  Preferably a
+    # generated device should declare its own pins.  However, a robust fallback method
+    # would be to extract the device and pick up the port positions of each device from
+    # the .ext file.
+
+    # Find a type name in the layers containing "mos" and assume this is the gate type.
+    # If it is preceded by "n", "p", "mvn", or "mvp", this indicates the diffusion type;
+    # that takes care of most of the device types.
+
+    ltype = None
+    for layer in cell._layer_stack:
+        lpos = layer.find('mos')
+        if lpos > 0:
+            ltype = layer[lpos - 1]
+            if lpos > 2 and layer[lpos - 3: lpos - 1] == 'mv':
+                ltype = layer[lpos - 3: lpos]
+            break
+
+    if ltype:
+        # Find the complementary type ('p' for 'n', 'mvn' for 'mvp', etc.)
+        ctype = 'n' if ltype.endswith('p') else 'p'
+        ctype = 'n' if ltype.endswith('p') else 'p'
+        ctype = ltype[0:-1] + ctype
+
+        difftype = ltype + 'diff'
+        diffconttype = ltype + 'diffc'
+        subconttype = ctype + 'subdiffcont'
+        drain_source_rects = cell.get_overlapping_rectangles(diffconttype, difftype)
+        bulk_rects = cell.get_overlapping_rectangles(subconttype, 'locali')
     else:
-        drain_source_rects = cell.get_overlapping_rectangles('ndiffc', 'ndiff')
-        bulk_rects = cell.get_overlapping_rectangles('psubdiffcont', 'locali')
+        print('Error:  MOSFET cell does not appear to have a gate layer type!')
 
     #merge and sort the drain/source and bulk rectangles
     if rot == 0 or rot==180:

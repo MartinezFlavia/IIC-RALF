@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     from SchematicCapture.Primitives import DifferentialPair
     from SchematicCapture.Devices import MOS, ThreeTermResistor, Capacitor
 
-from SchematicCapture.Devices import SubDevice, PrimitiveDevice
+from SchematicCapture.Devices import SubDevice, PrimitiveDevice, Fixed
 
 import pexpect
 import os
@@ -587,7 +587,7 @@ class Magic:
                 commands.extend(Magic.place_device(d))
         return commands
     
-    def gen_devices(self) -> str:
+    def gen_devices(self, circ:  Circuit) -> str:
         """Generate the devices for the circuit.
 
         Returns:
@@ -595,9 +595,27 @@ class Magic:
         """
         commands = []
         
-        circ = self._circuit
+        if circ == None:
+            circ = self._circuit
+
+        # Set up valid workspace where devices get instantiated
+        commands.append("load workspace -silent -quiet")
 
         for (d_name, d) in circ.devices.items():
+            if type(d) == Fixed:
+                # For now, handle fixed-layout devices by creating a new cell with the expected
+                # name that instantiates the fixed-layout cell.
+                instname = d.name
+                modelname = d.model
+
+                print('Diagnostic:  Device instance = ' + str(instname) + '; Device model = ' + str(modelname))
+                commands.append(f"load {d_name} -silent -quiet")
+                commands.append("box 0 0 0 0")
+                commands.append(f"getcell {modelname}")
+                commands.append(f"writeall force {d_name}")
+                commands.append(f"load workspace")
+
+
             if type(d) != SubDevice:
                 instname = d.name
                 modelname = d.model

@@ -289,14 +289,31 @@ class Device(metaclass = abc.ABCMeta):
                 #print(p_splitted)
                 #print(self._parameters)
                 temp = self._parameters.copy()
+
+                # Metric suffixes
+                suffixes = ['a', 'f', 'p', 'n', 'u', 'm', 'k', 'meg', 'g']
+                multipliers = [1e-18, 1e-15, 1e-12, 1e-9, 1e-6, 1e-3, 1e3, 1e6, 1e9]
                 
+                # Check for metric suffixes and remove them
+                value = p_splitted[1]
+                idx = 0
+                mult = 1
+                for s in suffixes:
+                    if value.upper().endswith(s):
+                        value = value[0:-len(s)]
+                        mult = multipliers[idx]
+                        break
+                    idx = idx + 1
+
                 #transform the str into a int|float
-                evald = eval(p_splitted[1])
-                
+                evald = eval(value)
+
                 if type(evald)==str:
                     #if the str can't be evaluated
                     #try to provide values from the parameters
                     evald = eval(evald, temp)
+                else:
+                    evald = evald * mult
                 
                 self._parameters[p_splitted[0]] = evald
 
@@ -864,7 +881,6 @@ class Bipolar(PrimitiveDevice):
     def _generate_routing_rules(self) -> list[RoutingRule]:
         return super()._generate_routing_rules()
 
-
 class MOS(PrimitiveDevice):
     """ Class to store a MOSFET.
         ```        
@@ -932,6 +948,46 @@ class MOS(PrimitiveDevice):
         else:
             raise ValueError("No valid model for placement-rule given!")
         
+        super()._gen_placement_rules()
+
+    def _generate_routing_rules(self) -> list[RoutingRule]:
+        return super()._generate_routing_rules()
+    
+class Fixed(PrimitiveDevice):
+    """ Class to store a known subcircuit with a fixed layout.
+        ```
+        ```
+    """
+    def __init__(self, spice_description : str, terminal_names = list[str], name_suffix=''):
+        """Setup a fixed-layout subcircuit.
+
+        Args:
+            spice_description (str): Spice description of the sub-device.
+            terminal_names (list[str]): Name of the terminals of the sub-device
+            name_suffix (str, optional): Name suffix of the device. Defaults to ''.
+        """
+        self._terminal_names = terminal_names
+        super().__init__(spice_description, len(terminal_names), name_suffix)
+
+        #get the model of the sub device == the name of the sub-circuit
+        self._model = self._spice_splitted[1 + len(terminal_names)]
+
+        #set the parameters
+        self._parameters = {"m" : 1}
+        self._set_params()
+        
+        #add features - a sub-device has no features other than multiplicity
+        self.add_feature("model", -1)
+        self.add_feature("m", 1)
+
+    def _setup_terminals(self):
+        """Set up the terminals of the device.
+            -> The terminals are named by terminal_names
+        """
+        for term in self._terminal_names:
+            self._terminals[term] = Pin(term, self)
+        
+    def _gen_placement_rules(self):
         super()._gen_placement_rules()
 
     def _generate_routing_rules(self) -> list[RoutingRule]:

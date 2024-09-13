@@ -70,25 +70,25 @@ def instantiate_circuit(Circuit : Circuit, mag : Magic, path='Magic/Devices'):
 
     #for each circuit instantiate the devices
     for (t, c) in topology:
-        print('Diagnostic:  instantiating devices.')
+        print('Diagnostic:  instantiating devices in circuit ' + c.name + '.')
         instantiate_devices(c, mag, path, del_path=False)
         logger.debug(f"Instantiated devices of {c} at topological layer {t}.")
 
-def instantiate_devices(Circuit : Circuit, mag : Magic, path = 'Magic/Devices', del_path = True):
+def instantiate_devices(circ : Circuit, mag : Magic, path = 'Magic/Devices', del_path = True):
     """Instantiate the devices of a circuit. (Without the devices of possible sub-circuits.)
 
     Args:
-        Circuit (Circuit): Circuit which shall be instantiated in magic.
+        circ (Circuit): Circuit which shall be instantiated in magic.
         mag (Magic): Process for sending and receiving magic commands and responses
         path (str, optional): Path where the resulting files, will be saved. Defaults to 'Magic/Devices'.
                             The files will be stored under:
                                 <working_dir>/<path>
         del_path (bool, optional): If the content at <path> shall be deleted, before the instantiation. Defaults to True.
     """
-    logger.info(f"Instantiating devices of {Circuit} in magic. Devices-path: {path}")
+    logger.info(f"Instantiating devices of {circ} in magic. Devices-path: {path}")
     
     #get the device generation commands
-    lines = mag.gen_devices()
+    lines = mag.gen_devices(circ)
 
     #if devices folder exists delete it
     # NOTE:  This is *highly* dangerous;  try setting path to your home directory. . .
@@ -102,13 +102,18 @@ def instantiate_devices(Circuit : Circuit, mag : Magic, path = 'Magic/Devices', 
 
     # Test:  Apply commands directly to the running magic process
 
-    # #write a tcl script to generate the devices
-    # file = open(path+'/init_devs.tcl', 'w')
-    # for l in lines:
-    #     file.write(l+'\n')
-    # file.close()
+    # Diagnostic:  write out the lines used to generate the devices
+    file = open(path + f"/init_devs_{circ.name}.tcl", 'w')
+    for l in lines:
+        file.write(l+'\n')
+    file.close()
 
-    mag.magic_command(lines)
+    # print("Diagnostic:  Sending commands to magic: " + '; '.join(lines))
+    # mag.magic_command(lines)
+    for l in lines:
+        response = mag.magic_command(l+'\n')
+        # print('Diagnostic:  magic command is: ' + l)
+        # print('Diagnostic:  magic response is: ' + response)
 
     # #let magic generate the devices
     # # check if the variable PDKPATH is set
@@ -127,7 +132,7 @@ def instantiate_devices(Circuit : Circuit, mag : Magic, path = 'Magic/Devices', 
     #     raise KeyError(f"[ERROR] Variable PDKPATH not set!")
     
     #if the circuit has already a cell view, update the paths
-    for device in Circuit.devices.values():
+    for device in circ.devices.values():
         if not (device.cell is None):
             if type(device.cell)==Cell:
                 device.cell.add_path(os.path.realpath(f'{path}'))
@@ -148,7 +153,7 @@ def generate_cell(name : str, path='Magic/Devices') -> Cell:
     logger.debug(f"Generating cell: {name}")
 
     if not os.path.exists(f'{path}/{name}.mag'):
-        raise FileNotFoundError(f"Magic-view of cell {name} not found in {path}/!")
+        raise FileNotFoundError(f"Magic view of cell {name} not found in {path}/!")
     
     #parse the magic-file
     parser = MagicParser(f'{path}/{name}.mag')
@@ -187,7 +192,7 @@ def add_cells(circ : Circuit, mag : Magic, path='Magic/Devices'):
                     cell = generate_cell(d_name, cell_path)
                     d.set_cell(cell)
     except FileNotFoundError:
-        print(f"Magic-view can't be found!")
+        print(f"Magic view of cell {d_name} can't be found in path {cell_path}!")
         print(f"Generating new view under '{path}'!")
         # NOTE: instantiate_circuit MUST generate the layout or else the recursive call to add_cells
         # will be an infinite loop.
@@ -246,7 +251,9 @@ def place_circuit(name : str, Circuit : Circuit, mag : Magic, path = 'Magic/Plac
     #     else:
     #         raise KeyError(f"[ERROR] Variable PDKPATH not set!")
 
-    mag.magic_command(lines)
+    # mag.magic_command(lines)
+    for l in lines:
+        mag.magic_command(l + '\n')
         
     
 def place_circuit_hierachical(name : str, circuit : Circuit, mag : Magic, path = "Magic/Placement", clean_path = True):

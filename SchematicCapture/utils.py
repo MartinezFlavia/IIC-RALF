@@ -226,6 +226,8 @@ def get_primitives(circ : Circuit, M : Magic) -> dict[str, list[PrimitiveDeviceC
 
     #setup a dict, for the primitive device compositions
     primitives = {}
+    devs_used = []
+
     for (prim, path) in SUPPORTED_PRIMITIVES.items():
         #store all found primitives of the primitive-composition class
         all_primitives = set()
@@ -267,6 +269,20 @@ def get_primitives(circ : Circuit, M : Magic) -> dict[str, list[PrimitiveDeviceC
         for d in all_primitives:
             #get the device instances
             devices = [circ.devices[dev] for dev in d]
+
+            # If a device can be placed in multiple primitives, then choose the first
+            # one.  NOTE:  If a device can be placed in multiple primitives, it's very
+            # likely that none of the primitives is right. . .  This needs investigation.
+            dont_use = False
+            for dev in devices:
+                if dev.name in devs_used:
+                    dont_use = True
+            if dont_use:
+                 continue
+            else:
+                for dev in devices:
+                    devs_used.append(dev.name)
+
             #get the class of the primitive device composition
             gen_prim = getattr(Primitives, prim)
             try:

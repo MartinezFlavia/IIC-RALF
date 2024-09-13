@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 import networkx as nx
 
 
-from SchematicCapture.Devices import MOS, ThreeTermResistor, Capacitor, SubDevice, NTermDevice, Diode, Inductor, Bipolar, SUPPORTED_DEVICES
+from SchematicCapture.Devices import MOS, ThreeTermResistor, Capacitor, SubDevice, NTermDevice, Diode, Inductor, Bipolar, Fixed, SUPPORTED_DEVICES
 from SchematicCapture.Net import Net, SubNet
 from Magic import Magic
 
@@ -250,12 +250,22 @@ class Circuit:
         for (name, prim_list) in primitives.items():
             #loop through all primitive types
             for primitive in prim_list:
+                # Diagnostic
+                devlist = []
+                for device in primitive.devices:
+                     devlist.append(device.name)
+                print('Diagnostic: These devices comprise a primitive: ' + ' '.join(devlist))
+
                 #loop through all primitives 
                 for device in primitive.devices:
                     #loop through all devices that the primitive device merges
                     for (net_name, net) in device.nets.items():
                         #reconnect the nets from the device to the primitive
-                        del net.devices[device.name]
+                        try:
+                            del net.devices[device.name]
+                        except:
+                            print('Error:  No such device ' + device.name)
+                            print('Device names in net.devices are: ' + ' '.join(net.devices))
                         net.add_device(primitive)
                         primitive.set_net_class(net)
                     #delete the device from the circuit
@@ -289,7 +299,6 @@ class Circuit:
         """
         #iterate over each line in the netlist
         for l in self._netlist.get_net():
-            
             device = None
             
             #setup a suffix for the device
@@ -347,9 +356,13 @@ class Circuit:
                 # '.subckt' and '.ends' lines end up here;  ignore them.
                 # print('Info:  ignoring line ' + l)
                 continue
+            elif modelchar == 'V':
+                print('Diagnostic:  Ignoring ideal voltage source in netlist.')
+            elif modelchar == 'I':
+                print('Diagnostic:  Ignoring ideal current source in netlist.')
             else:
                 # Probably something is very wrong if it gets here. . .
-                print('Diagnostic:  fall-back on classname None')
+                print('Diagnostic:  fallback on classname None')
                 print('    Line is: ' + l)
                 print('    instance is: ' + instance)
                 print('    model is: ' + model)
@@ -397,29 +410,55 @@ class Circuit:
                 #get the model of the sub-device
                 device_model = SubDevice.get_model(l)
 
-                #set the top-netlist as the netlist of the sub-circuit
-                subnet = copy.copy(self._netlist)
-                subnet._net = subnet.get_subnets()[device_model]
+                # Query magic to determine if this is a known cell layout
+                result = M.magic_command('load ' + device_model + ' -fail', True)
+                result = M.magic_command('cellname list self ' + device_model, True)
+                if result == device_model:
+                    # Device is a known existing cell 
+                    # (NOTE: May need to distinguish locally created cells?)
+                    # Get port list of device from magic
+                    result = M.magic_command('select top cell', True)
+                    firstport = M.magic_command('port first', True)
+                    lastport = M.magic_command('port last', True)
+                    terminal_names = []
+                    for i in range(int(firstport), int(lastport) + 1):
+                        portname = M.magic_command('port ' + str(i) + ' name', True)
+                        terminal_names.append(portname)
+
+                    print('Diagnostic:  Instantiated fixed-layout subcircuit ' + device_model)
+                    # NOTE: To do:  Need to find location of each port.
+                    device = Fixed(l, terminal_names = terminal_names, name_suffix=name_suffix)
+
+                else:
+
+                    print('Diagnostic:  Found internal subcircuit ' + device_model)
+                    #set the top-netlist as the netlist of the sub-circuit
+                    subnet = copy.copy(self._netlist)
+                    subnet._net = subnet.get_subnets()[device_model]
                 
-                #get the names of the terminals of the sub-circuit
-                terminal_names = SubCircuit.get_terminal_names(subnet._net[0])
+                    #get the names of the terminals of the sub-circuit
+                    terminal_names = SubCircuit.get_terminal_names(subnet._net[0])
                 
-                #generate a SubDevice 
-                device = SubDevice(l, name_suffix=name_suffix, terminal_names = terminal_names)
+                    #generate a SubDevice 
+                    device = SubDevice(l, name_suffix=name_suffix, terminal_names = terminal_names)
                 
-                #generate a sub-circuit for the SubDevice
-                # print('**Info: SubCircuit(), device=' + str(device))
-                subcirc = SubCircuit(subnet, self, M, device, self._topology_layer+1)
+                    #generate a sub-circuit for the SubDevice
+                    # print('**Info: SubCircuit(), device=' + str(device))
+                    subcirc = SubCircuit(subnet, self, M, device, self._topology_layer+1)
                 
-                #generate a circuit graph for the SubCircuit
-                subcirc.generate_circuit_graph()
+                    #generate a circuit graph for the SubCircuit
+                    subcirc.generate_circuit_graph()
                 
-                #set the SubCircuit of the SubDevice
-                device.set_circuit(subcirc)
+                    #set the SubCircuit of the SubDevice
+                    device.set_circuit(subcirc)
 
             #add the device to the devices dict
             if device:
                 self._devices[device._name] = device
+
+        # Diagnostic!
+        # print('Diagnostic:  Done with netlist after ' + str(len(self._netlist.get_net())) + ' lines.')
+            
                 
     def _instantiate_nets(self):
         """Instantiate the nets of the circuit.

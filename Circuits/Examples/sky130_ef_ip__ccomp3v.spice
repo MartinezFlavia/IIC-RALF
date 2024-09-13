@@ -1,6 +1,6 @@
 ** sch_path: /home/tim/gits/cheetah_v3_analog/dependencies/sky130_ef_ip__ccomp3v/xschem/sky130_ef_ip__ccomp3v.sch
-**.subckt sky130_ef_ip__ccomp3v VOUT DVDD DVSS VDD VSS VINP VINM
-*.PININFO VDD:I VOUT:O VSS:I VINP:I VINM:I DVDD:I DVSS:I
+**.subckt sky130_ef_ip__ccomp3v VOUT DVDD VDD VSS VINP VINM
+*.PININFO VDD:I VOUT:O VSS:I VINP:I VINM:I DVDD:I
 x1 VDD VBP VBN VSS VINP VOUT VINM DVDD comparator_core
 x2 VDD VSS VBP VBN comparator_bias
 .ends

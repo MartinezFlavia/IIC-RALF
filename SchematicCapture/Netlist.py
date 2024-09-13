@@ -150,7 +150,10 @@ class Netlist:
                     #if the command is a global statement -> raise a warning
                     elif line.upper().startswith(".GLOBAL"):
                         warnings.warn(f"Suppressing line: {line}! .GLOBAL statements aren't supported!") 
-                        break
+                        # Note:  Do not break on warnings.
+                    elif line.upper().startswith("."):
+                        warnings.warn(f"Suppressing line: {line}! dot cards aren't supported!") 
+                        # Note:  Do not break on warnings.
                     else:
                         raise  ValueError(f"Statement: {line} not supported!")
                 else:

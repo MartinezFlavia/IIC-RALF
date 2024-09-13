@@ -113,6 +113,10 @@ def get_net_from_str(circuit : Circuit, net_name : str) -> Net:
     try:
         net = sub_circ._nets[name_splitted[-1]]
     except:
+        # Net may exist in pin list without being in the netlist, so just create
+        # a new entry for it.
+        # net = Net(name_splitted[-1], circuit)
+        # sub_circ._nets[name_splitted[-1]] = net
         raise ValueError(f"Net {name_splitted[-1]} isn't in circuit {sub_circ.name}!")
 
     return net
