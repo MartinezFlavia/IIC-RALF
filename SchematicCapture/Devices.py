@@ -34,6 +34,7 @@ SUPPORTED_DEVICES = {}
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from Magic.Cell import Cell
+    from Magic import Magic
     from SchematicCapture.Net import Net
     from Rules.RoutingRules import RoutingRule
     from SchematicCapture.Circuit import Circuit, SubCircuit
@@ -258,7 +259,7 @@ class Device(metaclass = abc.ABCMeta):
         """
         return self._cell
 
-    def set_cell(self, cell : Cell):
+    def set_cell(self, cell : Cell, mag : Magic):
         """Set the cell of the device.
 
         Args:
@@ -269,7 +270,7 @@ class Device(metaclass = abc.ABCMeta):
         self._cell.set_device(self)
         
         #add terminals to the cell 
-        self._cell.add_terminals()
+        self._cell.add_terminals(mag)
 
         #generate placement rules, induced from the device and cell
         self._gen_placement_rules()

@@ -137,7 +137,7 @@ def instantiate_devices(circ : Circuit, mag : Magic, path = 'Magic/Devices', del
             if type(device.cell)==Cell:
                 device.cell.add_path(os.path.realpath(f'{path}'))
 
-def generate_cell(name : str, path='Magic/Devices') -> Cell:
+def generate_cell(name : str, mag : Magic, path='Magic/Devices') -> Cell:
     """Generate a Cell-view.
 
     Args:
@@ -162,7 +162,7 @@ def generate_cell(name : str, path='Magic/Devices') -> Cell:
     layers = copy.copy(parser.layers)
 
     #generate the cell
-    cell = Cell(name, layers)
+    cell = Cell(name, layers, mag)
     
     #add the path to the cell
     cell.add_path(os.path.realpath(f'{path}'))
@@ -189,8 +189,9 @@ def add_cells(circ : Circuit, mag : Magic, path='Magic/Devices'):
             for (d_name, d) in c.devices.items():
                 if type(d) is not SubDevice:
                     cell_path = path
+                    print('Calling generate_cell(' + d_name + ', ' + cell_path + ')')
                     cell = generate_cell(d_name, cell_path)
-                    d.set_cell(cell)
+                    d.set_cell(cell, mag)
     except FileNotFoundError:
         print(f"Magic view of cell {d_name} can't be found in path {cell_path}!")
         print(f"Generating new view under '{path}'!")
@@ -198,10 +199,11 @@ def add_cells(circ : Circuit, mag : Magic, path='Magic/Devices'):
         # will be an infinite loop.
         instantiate_circuit(circ, mag, path)
         add_cells(circ=circ, mag=mag, path=path)
-    except Exception as e:
-        print(f"Adding cells to {circ} failed!")
-        print(f"Exception: {e}")
-        sys.exit(1)
+
+#   except Exception as e:
+#       print(f"Adding cells to {circ} failed!")
+#       print(f"Exception: {e}")
+#       sys.exit(1)
                 
 
 def place_circuit(name : str, Circuit : Circuit, mag : Magic, path = 'Magic/Placement', debug=False, clean_path=True):

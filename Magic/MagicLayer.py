@@ -409,7 +409,11 @@ class MagicLayer:
         Returns:
             list[int|float]: (x0, y0, x1, y1)
         """
-        bounding = self._rects[0].get_coordinates()
+        try:
+            bounding = self._rects[0].get_coordinates()
+        except:
+            print('Error: Layer ' + self.name + ': failed to get any coordinates.')
+            bounding = [0, 0, 0, 0]
         for r in self._rects:
             r_bound = r.get_coordinates()
             for i in range(2):

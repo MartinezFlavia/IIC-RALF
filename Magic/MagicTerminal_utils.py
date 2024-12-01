@@ -24,8 +24,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from Magic.MagicLayer import Rectangle
 from Magic.MagicTerminal import MagicTerminal, MagicPin
+from Magic.Magic import Magic
 from SchematicCapture.Net import Net
-from SchematicCapture.Devices import PrimitiveDevice, MOS, Capacitor, ThreeTermResistor
+from SchematicCapture.Devices import PrimitiveDevice, MOS, Capacitor, ThreeTermResistor, Fixed
 from SchematicCapture.Primitives import DifferentialLoad, CrossCoupledPair, DifferentialPair
 from SchematicCapture.RString import RString
 
@@ -38,7 +39,145 @@ from PDK.PDK import global_pdk
 import copy
 import math
 
-def get_terminals_MOS(cell : Cell) -> MagicTerminal:
+def generate_multi_device_terminals(cell : Cell, mag : Magic, mapping : list) -> MagicTerminal:
+    """Get the physical terminals of a device with M > 1
+    """
+
+    device = cell.device
+
+    print('generate_multi_device_terminals:  Diagnostic: device name is ' + cell.name)
+
+    terminal_rects = {}
+    terminal_layers = {}
+    terminal_location = {}
+
+    # Load the cell into magic and query the port names, types, and positions.
+    # Unlike fixed devices, the name of the cell is the file to load, not the
+    # name of the device model.  The cell is a generated device.
+
+    print('Diagnostic:  Calling "load ' + cell.name + '"')
+    mag.magic_command('load ' + cell.name)
+    mag.magic_command('select top cell')
+    p1 = mag.magic_command('port first')
+    p2 = mag.magic_command('port last')
+    p = p1
+    cellports = []
+    while (True):
+        portname = mag.magic_command('port ' + p + ' name')
+        porttype = mag.magic_command('goto ' + portname)
+        portbox = mag.magic_command('box values')
+   
+        print('Diagnostic:  portname is ' + portname)
+        print('Diagnostic:  porttype is ' + porttype)
+        print('Diagnostic:  portbox is ' + portbox)
+
+        # Does this port map?
+        mapname = None
+        for pair in mapping:
+            if portname.startswith(pair[0]):
+                mapname = pair[1]
+                break
+
+        # If the port name does not match any of the mapping pairs, then
+        # just use the name (e.g., "B" for bulk).
+        if not mapname:
+            mapname = portname
+
+        # Save the port information
+        rectvals = portbox.split();
+        termrect = Rectangle(int(rectvals[0]), int(rectvals[1]),
+			int(rectvals[2]), int(rectvals[3]))
+        terminal_rects[mapname] = [termrect]
+
+        terminal_layers[mapname] = porttype
+        # Not sure yet what to do with the terminal location. . . 
+        terminal_location[mapname] = 'mm'
+        cellports.append(mapname)
+
+        if p == p2:
+            break
+        else:
+            p = mag.magic_command('port ' + p + ' next')
+
+    print('Diagnostic:  Terminals of multi device ' + cell.name + ' are:')
+    print(' '.join(cellports))
+    print('Generating terminals.')
+
+    terminals = generate_terminals(terminal_rects, terminal_layers, terminal_location, cell)
+    return terminals
+
+def get_terminals_Fixed(cell : Cell, mag : Magic) -> MagicTerminal:
+    """Get the physical terminals of a fixed-layout device.
+
+    Args:
+        cell (Cell): Cell-view of the fixed-layout device.
+
+    Raises:
+        ValueError: If the rotation of the cell isn't 0.
+        
+    Returns:
+        MagicTerminal: Physical terminal of the device.
+    """
+    
+    device = cell.device
+    assert type(device)==Fixed, f"Device isn't a fixed-layout device!"
+    assert device.parameters['m']==1, f"Device isn't built up by a single component!"
+
+    #get the rotation of the cell
+    rot = cell.rotation
+
+    if rot != 0:
+        raise ValueError(f"Rotation angle of cell other than 0 not supported! ({cell})")
+    
+    print('get_terminals_Fixed:  Diagnostic: device name is ' + cell.name)
+
+    terminal_rects = {}
+    terminal_layers = {}
+    terminal_location = {}
+
+    # Load the cell into magic and query the port names, types, and positions.
+
+    print('Diagnostic:  Calling "load ' + device.model + '"')
+    mag.magic_command('load ' + device.model)
+    mag.magic_command('select top cell')
+    p1 = mag.magic_command('port first')
+    p2 = mag.magic_command('port last')
+    p = p1
+    cellports = []
+    while (True):
+        portname = mag.magic_command('port ' + p + ' name')
+        porttype = mag.magic_command('goto ' + portname)
+        portbox = mag.magic_command('box values')
+   
+        print('Diagnostic:  portname is ' + portname)
+        print('Diagnostic:  porttype is ' + porttype)
+        print('Diagnostic:  portbox is ' + portbox)
+
+        # Save the port information
+        rectvals = portbox.split();
+        termrect = Rectangle(int(rectvals[0]), int(rectvals[1]),
+			int(rectvals[2]), int(rectvals[3]))
+        terminal_rects[portname] = [termrect]
+
+        terminal_layers[portname] = porttype
+        # Not sure yet what to do with the terminal location. . . 
+        terminal_location[portname] = 'mm'
+        cellports.append(portname)
+
+        if p == p2:
+            break
+        else:
+            p = mag.magic_command('port ' + p + ' next')
+
+    print('Diagnostic:  Terminals of fixed device ' + cell.name + ' are:')
+    print(' '.join(cellports))
+    print('Generating terminals.')
+
+    terminals = generate_terminals(terminal_rects, terminal_layers, terminal_location, cell)
+    return terminals
+
+
+def get_terminals_MOS(cell : Cell, mag : Magic) -> MagicTerminal:
     """Get the physical terminals of a MOS.
 
     Args:
@@ -53,7 +192,6 @@ def get_terminals_MOS(cell : Cell) -> MagicTerminal:
     
     device = cell.device
     assert type(device)==MOS, f"Device isn't a MOS!"
-    assert device.parameters['m']==1, f"Device isn't build up by a single MOS!"
 
     #get the rotation of the cell
     rot = cell.rotation
@@ -61,6 +199,13 @@ def get_terminals_MOS(cell : Cell) -> MagicTerminal:
     if rot != 0:
         raise ValueError(f"Rotation angle of cell other than 0 not supported! ({cell})")
     
+    if device.parameters['m'] > 1:
+        mapping = []
+        mapping.append(('D', 'D'))
+        mapping.append(('S', 'S'))
+        mapping.append(('G', 'G'))
+        return generate_multi_device_terminals(cell, mag, mapping)
+
     if 'botc' in device.cell_parameters:
         if device.cell_parameters['botc']:
             raise ValueError("Bottom gate-contact for a single MOS not supported!")
@@ -98,6 +243,8 @@ def get_terminals_MOS(cell : Cell) -> MagicTerminal:
             ltype = layer[lpos - 1]
             if lpos > 2 and layer[lpos - 3: lpos - 1] == 'mv':
                 ltype = layer[lpos - 3: lpos]
+            elif lpos == 4 and layer[lpos - 4: lpos - 2] == 'mv':
+                ltype = layer[lpos - 4: lpos - 1]
             break
 
     if ltype:
@@ -200,7 +347,7 @@ def get_terminals_MOS(cell : Cell) -> MagicTerminal:
     terminals = generate_terminals(terminal_rects, terminal_layers, terminal_location, cell)
     return terminals
 
-def get_terminals_ThreeTermResistor(cell : Cell) -> dict[str, MagicTerminal]:
+def get_terminals_ThreeTermResistor(cell : Cell, mag : Magic) -> dict[str, MagicTerminal]:
     """Maps the terminals D,S,B to terminals/pins of the devices cell,
     for a three-terminal-resistor.
 
@@ -213,12 +360,17 @@ def get_terminals_ThreeTermResistor(cell : Cell) -> dict[str, MagicTerminal]:
 
     device = cell.device
     assert type(device)==ThreeTermResistor, f"Device isn't a ThreeTermResistor!"
-    assert device.parameters['m']==1, f"Device isn't build up by a single resistor!"
     assert device.use_dummies==False, f"Dummy-Resistors aren't supported!"
 
     rot = cell.rotation
     assert rot==0, f"Rotation different, than 0deg detected!"
     
+    if device.parameters['m'] > 1:
+        mapping = []
+        mapping.append(('R1', 'D'))
+        mapping.append(('R2', 'S'))
+        return generate_multi_device_terminals(cell, mag, mapping)
+
     #get the drain/source and bulk contacts
     drain_source_rects = cell.get_overlapping_rectangles('xpolycontact', 'pwell')
     bulk_rects = cell.get_overlapping_rectangles('psubdiffcont', 'locali')
@@ -258,7 +410,7 @@ def get_terminals_ThreeTermResistor(cell : Cell) -> dict[str, MagicTerminal]:
     terminals = generate_terminals(terminal_rects, terminal_layers, terminal_location, cell)
     return terminals
 
-def get_terminals_Capacitor(cell : Cell) -> dict[str, MagicTerminal]:
+def get_terminals_Capacitor(cell : Cell, mag : Magic) -> dict[str, MagicTerminal]:
     """Maps the terminals D,S to terminals/pins of the devices cell,
     for a capacitor.
 
@@ -271,11 +423,29 @@ def get_terminals_Capacitor(cell : Cell) -> dict[str, MagicTerminal]:
 
     device = cell.device
     assert type(device)==Capacitor, f"Device isn't a Capacitor!"
-    assert device.parameters['m']==1, f"Device isn't build up by one Capacitor!"
     assert device.use_dummies==False, f"Dummy-Capacitors aren't supported!"
     rot = cell.rotation
     assert rot==0, f"Rotation different, than 0deg detected!"
     
+    # Handle M != 1.  Magic does not generate cells with devices connected
+    # in parallel, so there will be multiple devices in the cell that need
+    # to be wired together.  Ultimately this is another variable on which
+    # to optimize layout (modify aspect ratio of the cell by adjusting
+    # number of rows and columns).  For now, 1st cut, assume the method
+    # used in sky130 PDK from 1.0.503, which is to label capacitors with
+    # ports C1 and C2, or C1_<value> and C2_<value>, or C1_<value>_<value>
+    # and C2_<value>_<value> for 0D, 1D, and 2D arrays, respectively.
+    #
+    # Assume that because the netlist is instantiating a single device
+    # with value M, this is one device, all top and bottom plate ports
+    # are to be connected, and map all C1_* to "D" and all C2_* to "S".
+
+    if device.parameters['m'] > 1:
+        mapping = []
+        mapping.append(('C1', 'D'))
+        mapping.append(('C2', 'S'))
+        return generate_multi_device_terminals(cell, mag, mapping)
+
     top_layer = 'm4'
 
     if device.model == "sky130_fd_pr__cap_mim_m3_1":
@@ -315,7 +485,7 @@ def get_terminals_Capacitor(cell : Cell) -> dict[str, MagicTerminal]:
     terminals = generate_terminals(terminal_rects, terminal_layers, terminal_location, cell)
     return terminals
 
-def get_terminals_DifferentialPair(cell : Cell) -> dict[str, MagicTerminal]:
+def get_terminals_DifferentialPair(cell : Cell, mag : Magic) -> dict[str, MagicTerminal]:
     """Maps the terminals G1, G2, D1, D2, S, B to terminals/pins of the devices cell.
 
     Args:
@@ -328,7 +498,7 @@ def get_terminals_DifferentialPair(cell : Cell) -> dict[str, MagicTerminal]:
     device = cell.device
 
     assert type(device)==DifferentialPair
-    assert device.parameters['m']==1, f"Device isn't build up by one MOS!"
+    assert device.parameters['m']==1, f"Device isn't built up by a single component!"
 
     rot = cell.rotation
 
@@ -367,9 +537,18 @@ def get_terminals_DifferentialPair(cell : Cell) -> dict[str, MagicTerminal]:
     if 'pmos' in cell._layer_stack:
         drain_source_rects = cell.get_overlapping_rectangles('pdiffc', 'pdiff')
         bulk_rects = cell.get_overlapping_rectangles('nsubdiffcont', 'locali')
-    else:
+    elif 'nmos' in cell._layer_stack:
         drain_source_rects = cell.get_overlapping_rectangles('ndiffc', 'ndiff')
         bulk_rects = cell.get_overlapping_rectangles('psubdiffcont', 'locali')
+    elif 'mvpmos' in cell._layer_stack:
+        drain_source_rects = cell.get_overlapping_rectangles('mvpdiffc', 'mvpdiff')
+        bulk_rects = cell.get_overlapping_rectangles('mvnsubdiffcont', 'locali')
+    elif 'mvnmos' in cell._layer_stack:
+        drain_source_rects = cell.get_overlapping_rectangles('mvndiffc', 'mvndiff')
+        bulk_rects = cell.get_overlapping_rectangles('mvpsubdiffcont', 'locali')
+    else:
+        # This will fail.  Need to fall back on a generic method (multi?).
+        pass
     
     
     #merge and sort the rectangles
@@ -466,7 +645,7 @@ def get_terminals_DifferentialPair(cell : Cell) -> dict[str, MagicTerminal]:
     terminals = generate_terminals(terminal_rects, terminal_layers, terminal_location, cell)
     return terminals
 
-def get_terminals_DifferentialLoad(cell : Cell) -> dict[str, MagicTerminal]:
+def get_terminals_DifferentialLoad(cell : Cell, mag : Magic) -> dict[str, MagicTerminal]:
     """Maps the terminals D1,D2,S1,S2,G,B to terminals/pins of the devices cell,
     for a differential load. 
 
@@ -480,7 +659,7 @@ def get_terminals_DifferentialLoad(cell : Cell) -> dict[str, MagicTerminal]:
     device = cell.device
 
     assert type(device)==DifferentialLoad
-    assert device.parameters['m']==2, f"Device isn't build up by two MOS!"
+    assert device.parameters['m']==2, f"Device isn't built up by two components!"
 
     rot = cell.rotation
 
@@ -517,9 +696,18 @@ def get_terminals_DifferentialLoad(cell : Cell) -> dict[str, MagicTerminal]:
     if 'pmos' in cell._layer_stack:
         drain_source_rects = cell.get_overlapping_rectangles('pdiffc', 'pdiff')
         bulk_rects = cell.get_overlapping_rectangles('nsubdiffcont', 'locali')
-    else:
+    elif 'nmos' in cell._layer_stack:
         drain_source_rects = cell.get_overlapping_rectangles('ndiffc', 'ndiff')
         bulk_rects = cell.get_overlapping_rectangles('psubdiffcont', 'locali')
+    elif 'mvpmos' in cell._layer_stack:
+        drain_source_rects = cell.get_overlapping_rectangles('mvpdiffc', 'mvpdiff')
+        bulk_rects = cell.get_overlapping_rectangles('mvnsubdiffcont', 'locali')
+    elif 'mvnmos' in cell._layer_stack:
+        drain_source_rects = cell.get_overlapping_rectangles('mvndiffc', 'mvndiff')
+        bulk_rects = cell.get_overlapping_rectangles('mvpsubdiffcont', 'locali')
+    else:
+        # This will fail.  Need to fall back on a generic method (multi?).
+        pass
 
     #merge and sort the rectangles
     if rot == 0 or rot==180:
@@ -646,7 +834,7 @@ def get_terminals_DifferentialLoad(cell : Cell) -> dict[str, MagicTerminal]:
     terminals = generate_terminals(terminal_rects, terminal_layers, terminal_location, cell)
     return terminals
 
-def get_terminals_CrossCoupledPair(cell : Cell) -> dict[str,MagicTerminal]:
+def get_terminals_CrossCoupledPair(cell : Cell, mag : Magic) -> dict[str,MagicTerminal]:
     """Maps the terminals D1,D2,S1,S2,B to terminals/pins of the devices cell,
     for a CrossCoupledPair.
 
@@ -659,7 +847,7 @@ def get_terminals_CrossCoupledPair(cell : Cell) -> dict[str,MagicTerminal]:
 
     device = cell.device
     assert type(device)==CrossCoupledPair, f"Device isn't a cross-coupled-pair!"
-    assert device.parameters['m']==2, f"Device isn't build up by two MOS!"
+    assert device.parameters['m']==2, f"Device isn't built up by two components!"
     rot = cell.rotation
     assert rot==0, f"Rotation different, than 0deg detected!"
 
@@ -693,9 +881,18 @@ def get_terminals_CrossCoupledPair(cell : Cell) -> dict[str,MagicTerminal]:
     if 'pmos' in cell._layer_stack:
         drain_source_rects = cell.get_overlapping_rectangles('pdiffc', 'pdiff')
         bulk_rects = cell.get_overlapping_rectangles('nsubdiffcont', 'locali')
-    else:
+    elif 'nmos' in cell._layer_stack:
         drain_source_rects = cell.get_overlapping_rectangles('ndiffc', 'ndiff')
         bulk_rects = cell.get_overlapping_rectangles('psubdiffcont', 'locali')
+    elif 'mvpmos' in cell._layer_stack:
+        drain_source_rects = cell.get_overlapping_rectangles('mvpdiffc', 'mvpdiff')
+        bulk_rects = cell.get_overlapping_rectangles('mvnsubdiffcont', 'locali')
+    elif 'nmos' in cell._layer_stack:
+        drain_source_rects = cell.get_overlapping_rectangles('mvndiffc', 'mvndiff')
+        bulk_rects = cell.get_overlapping_rectangles('mvpsubdiffcont', 'locali')
+    else:
+        # This will fail.  Need to fall back on a generic method (multi?).
+        pass
 
 
     #merge and sort the rectangles
@@ -816,7 +1013,7 @@ def get_terminals_CrossCoupledPair(cell : Cell) -> dict[str,MagicTerminal]:
     terminals = generate_terminals(terminal_rects, terminal_layers, terminal_location, cell)
     return terminals
 
-def get_terminals_RString(cell : Cell) -> dict[str, MagicTerminal]:
+def get_terminals_RString(cell : Cell, mag : Magic) -> dict[str, MagicTerminal]:
     """Maps the terminals of the RString to terminals/pins of the devices cell.
 
     Args:
@@ -843,7 +1040,7 @@ def get_terminals_RString(cell : Cell) -> dict[str, MagicTerminal]:
     drain_source_rects = cell.get_overlapping_rectangles('xpolycontact', 'pwell')
     bulk_rects = cell.get_overlapping_rectangles('psubdiffcont', 'locali')
 
-    #merge the rectangles, since the rectangles can be build up
+    #merge the rectangles, since the rectangles can be built up
     #by multiple smaller ones
 
     #drain_source_rects = merge_rects(drain_source_rects, direction=1)
@@ -965,6 +1162,7 @@ def generate_terminals(terminal_rects : dict[str, list[Rectangle]], terminal_lay
         #get the pin-location/coordinates
         pin_locations = map_rects_to_terminal_location(rects, terminal_location[terminal], cell.rotation)
         #get the PDK layer
+        print('Diagnostic: terminal is ' + terminal + '; layer is ' + terminal_layers[terminal])
         layer = global_pdk.get_layer(terminal_layers[terminal])
         
         #generate the terminal

@@ -27,11 +27,12 @@ if TYPE_CHECKING:
     from Rules.PlacementRules import PlacementRules
 
 from Magic.MagicTerminal_utils import *
+from Magic.Magic import Magic
 
 class Cell:
     """Class to store the cell-view of a device.
     """
-    def __init__(self, name : str, layer_stack : dict[str, MagicLayer], device : Device = None):
+    def __init__(self, name : str, layer_stack : dict[str, MagicLayer], mag : Magic, device : Device = None):
         """Setup a cell-view of a device.
 
         Args:
@@ -71,7 +72,7 @@ class Cell:
         #if a device were specified
         #add physical terminals to the cell
         if self._device:
-            self.add_terminals()
+            self.add_terminals(mag)
         
         #setup features of the cell
         self._features = {
@@ -83,8 +84,11 @@ class Cell:
             "Center_Point" : None,
         }
 
-        #reset the cell
-        self.reset_place()
+        if not self.get_bounding_box():
+            print('To do:  Query magic for location of unknown cell.')
+        else:
+            #reset the cell
+            self.reset_place()
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(name={self._name}, device={self.device})"
@@ -311,7 +315,7 @@ class Cell:
         
         return terminals
 
-    def add_terminals(self):
+    def add_terminals(self, mag : Magic):
         """Add physical terminals to the cell.
 
         Raises:
@@ -324,7 +328,7 @@ class Cell:
                 suffix = self._device.__class__.__name__
                 #set the name of the generator method
                 func = "get_terminals_"+suffix
-                self._terminals = globals()[func](self) #call the generator method for the terminals
+                self._terminals = globals()[func](self, mag) #call the generator method for the terminals
 
                 #register the cell-terminals at the devices terminal
                 for (k, v)  in self._terminals.items():
@@ -620,7 +624,11 @@ class Cell:
         Returns:
             list: [x0, y0, x1, y1]
         """
-        bounding = self._layer_stack["Bounding"].get_bounding_box()
+        try:
+            bounding = self._layer_stack["Bounding"].get_bounding_box()
+        except:
+            print('Error:  No bounding box set for cell ' + self.name)
+            bounding = None
         return bounding
     
     def collidates(self, cell : Cell) -> bool:

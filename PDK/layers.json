@@ -1,6 +1,6 @@
 {
 "ScaleFactor":10, 
-"device_layers":["nwell","dnwell", "mimcap"],
+"device_layers":["pwell", "nwell","dnwell", "mimcap", "mimcapcontact"],
 "layer_stack":["li","m1","m2","m3","m4","m5"],
 "via_stack":["mcon","via1","via2","via3","via4"],
 "aliases":{
@@ -9,7 +9,8 @@
     "m2" : ["met2", "metal2"],
     "m3" : ["met3", "metal3"],
     "m4" : ["met4", "metal4"],
-    "m5" : ["met5", "metal5"]
+    "m5" : ["met5", "metal5"],
+    "mimcapcontact" : ["mimcc"]
 },
 "via_map":{
     "lim1": "mcon",
@@ -116,6 +117,12 @@
         "Resistivity": 29
     }
 ,
+"pwell":
+    {
+        "Width": 0,
+        "Space": 0
+    }
+,
 "nwell":
     {
         "Width": 840,
@@ -129,6 +136,12 @@
     }
 ,
 "mimcap":
+    {
+        "Width": 2000,
+        "Space": 1200
+    }
+,
+"mimcapcontact":
     {
         "Width": 2000,
         "Space": 1200

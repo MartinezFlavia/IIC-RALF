@@ -90,7 +90,28 @@ class MagicParser:
                 self._magscale = int(splitted[2])
 
             #if a new layer were defined
-            if MagicParser.get_layer(l): 
+            lname = MagicParser.get_layer(l)
+            if lname == 'labels':
+                # Handle labels.  They should only exist on layers that
+                # have been parsed previously.  TO DO:  This routine needs
+                # to use the labels to define the device terminals.  For
+                # now, just record the area of the label as belonging to
+                # the set of rectangles for the layer.
+                n += 1
+                layer = layers[MagicParser.get_label_layer(lines[n])]
+                while layer:
+                    rect = self.get_label_rect(lines[n])
+                    layer.add_rect(rect)
+                    n += 1
+                    if lines[n].startswith('port'):
+                        # TO DO:  Add terminal here. . .
+                        n += 1
+                    if lines[n]. startswith('<<'):
+                        n -= 1
+                        break
+                    layer = layers[MagicParser.get_label_layer(lines[n])]
+                
+            elif lname:
                 #set a random color for this layer
                 color = Color((np.random.randint(0, 255),np.random.randint(0, 255), np.random.randint(0, 255)))
                 
@@ -160,5 +181,53 @@ class MagicParser:
         else:
             return None
         
-        
+    def get_label_layer(line : str) -> str | bool | None:
+        """Get the name of the label layer, defined in line <line>.
+            To get a name, the line must have the structure
+                rlabel layer_name [values]
+        Args:
+            line (str): Line in .mag file.
 
+        Returns:
+            str|bool|None: The name of the layer, False|None if no layer was found.
+        """
+        if line.startswith("flabel") or line.startswith("rlabel"):
+            layer = line.split()[1]
+            if layer not in SKIPPED_LAYERS:
+                return layer
+            else:
+                return False
+        else:
+            return None
+    
+    def get_label_rect(self, line : str) -> Rectangle|None:
+        """Get a rectangle from a .mag file label line.
+            The line must have the following structure:
+            
+            [f|r]label layer x_min y_min x_max y_max text
+
+            ------------(x_max, y_max)
+            |                   |
+            |                   |
+            |                   |
+        (x_min, y_min)----------
+
+
+        Args:
+            line (str): .mag file line
+
+        Returns:
+            Rectangle|None: Rectangle if the line starts with 'rlabel' or 'flabel,
+            else None.
+        """
+        if line.startswith("rlabel") or line.startswith("flabel"):
+            # NOTE:  This works for "rlabel", need to handle "flabel" differently,
+            # because there are additional arguments in the line.
+            l = line.split()
+            return Rectangle(int(l[2])/self._magscale,
+                            int(l[3])/self._magscale, 
+                            int(l[4])/self._magscale,
+                            int(l[5])/self._magscale)
+        else:
+            return None
+        
