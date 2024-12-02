@@ -1,6 +1,6 @@
 {
 "ScaleFactor":10, 
-"device_layers":["pwell", "nwell","dnwell", "mimcap", "mimcapcontact", "mimcap2", "mimcap2contact", "mvpsubdiffcont", "mvnsubdiffcont","psubdiffcont","nsubdiffcont","ndiffc","pdiffc","mvndiffc","mvpdiffc","polycont", "ndiodec", "pdiodec", "mvndiodec", "mvpdiodec"],
+"device_layers":["pwell", "nwell","dnwell", "mimcap", "mimcapcontact", "mimcap2", "mimcap2contact", "mvpsubdiffcont", "mvnsubdiffcont","psubdiffcont","nsubdiffcont","ndiffc","pdiffc","mvndiffc","mvpdiffc","polycont", "ndiodec", "pdiodec", "mvndiodec", "mvpdiodec", "xpolycontact"],
 "layer_stack":["li","m1","m2","m3","m4","m5"],
 "via_stack":["mcon","via1","via2","via3","via4"],
 "aliases":{
@@ -24,7 +24,8 @@
     "ndiodec" : ["ndic"],
     "pdiodec" : ["pdic"],
     "mvndiodec" : ["mvndic"],
-    "mvpdiodec" : ["mvpdic"]
+    "mvpdiodec" : ["mvpdic"],
+    "xpolycontact" : ["xpc"]
 },
 "via_map":{
     "lim1": "mcon",
@@ -222,6 +223,12 @@
     }
 ,
 "polycont":
+    {
+        "Width": 170,
+        "Space": 200
+    }
+,
+"xpolycontact":
     {
         "Width": 170,
         "Space": 200
