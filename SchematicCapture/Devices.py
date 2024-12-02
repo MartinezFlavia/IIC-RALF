@@ -780,7 +780,9 @@ class Diode(PrimitiveDevice):
         if 'pd' in self.model:
             #generate a spacing rule for the nwell
             rule = PlacementRules.Spacing(cell=self.cell, layer=global_pdk.get_layer("nwell"), net=self.terminal_nets['C'])
-        self._placement_rules = PlacementRules.PlacementRules(cell=self.cell, rules=[rule])
+            self._placement_rules = PlacementRules.PlacementRules(cell=self.cell, rules=[rule])
+        else:
+            self._placement_rules = None
         super()._gen_placement_rules()
 
     def _generate_routing_rules(self) -> list[RoutingRule]:

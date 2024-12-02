@@ -46,6 +46,7 @@ class Cell:
         self._add_bounding_layer() #add a bounding layer to the layer stack
         
         self._device = device
+        # self._mag = mag
         
         #store the path of the .mag file
         self._path = None
@@ -85,7 +86,7 @@ class Cell:
         }
 
         if not self.get_bounding_box():
-            print('To do:  Query magic for location of unknown cell.')
+            print('Error:  Unable to get bounding box of cell.')
         else:
             #reset the cell
             self.reset_place()
@@ -142,6 +143,32 @@ class Cell:
 
         #get the bounding box of the cell
         bounding = self.get_bounding_box()
+        
+        #calculate the mean-coordinates
+        mean_x = round((bounding[2]+bounding[0])/2, 2) #center-point x
+        mean_y = round((bounding[3]+bounding[1])/2, 2) #center-point y
+
+        #set the center-point of the cell
+        self._center_point = (mean_x, mean_y)
+        #return the center-point
+        return self._center_point
+    
+    def get_center_point(self, magicproc : Magic = None) -> tuple[float|int, float|int]:
+        """Get the center-point of the cell.
+
+            ```
+                    ----------------
+                    |       |       |
+                    |-----(x,y)-----|
+                    |       |       |
+                    ----------------
+            ```
+        Returns:
+            tuple[float|int, float|int]: (x,y)
+        """
+
+        #get the bounding box of the cell
+        bounding = self.get_bounding_box(mag=magicproc)
         
         #calculate the mean-coordinates
         mean_x = round((bounding[2]+bounding[0])/2, 2) #center-point x
@@ -364,7 +391,7 @@ class Cell:
         """
         self._in_placement = True
 
-    def reset_place(self):
+    def reset_place(self, magicproc : Magic = None):
         """Reset the placement.
             - Rotate the cell, such that the initial rotation gets restored.
             - Move the cell, to the (0,0) coordinate.
@@ -373,7 +400,7 @@ class Cell:
         if not self.rotation == 0:
             self.rotate_center(-self.rotation)
 
-        self.move_center((0,0))
+        self.move_center((0,0), magicproc = magicproc)
         self._placed = False
         self._in_placement = False
     
@@ -443,7 +470,7 @@ class Cell:
                 for i in range(2,4):
                     bounding[i] = max(bounding[i], r_bound[i])   
             
-            #setup a rectangle for the boundary and add it to the layer stack
+            #set up a rectangle for the boundary and add it to the layer stack
             bounding_rect = Rectangle(bounding[0], bounding[1], bounding[2], bounding[3])
             bounding_layer = MagicLayer("Bounding", Color((255,255,255)))
             bounding_layer.add_rect(bounding_rect)
@@ -541,7 +568,11 @@ class Cell:
         """
 
         #move the bounding layer
-        self._layer_stack["Bounding"].move(coordinate)
+        try:
+            self._layer_stack["Bounding"].move(coordinate)
+        except:
+            # To do:  Need to create a bounding box if one does not exist.
+            pass
 
         #move all physical terminals
         for (name, term) in self._terminals.items():
@@ -596,21 +627,22 @@ class Cell:
 
         self._move((0, bounding[3]-bounding[1]))
 
-    def move_center(self, coordinate : tuple[int|float, int|float]):
+    def move_center(self, coordinate : tuple[int|float, int|float], magicproc : Magic = None):
         """Move the center of the bounding-layer and the terminals to center-point <coordinate>.
 
         Args:
             coordinate (tuple[int|float, int|float]): New center-coordinate of the cell.
         """
         
-        mean_x = self.center_point[0]
-        mean_y = self.center_point[1]
+        # mean_x = self.center_point[0]
+        # mean_y = self.center_point[1]
+        (mean_x, mean_y) = self.get_center_point(magicproc=magicproc)
         
         move_by = (coordinate[0]-mean_x, coordinate[1]-mean_y)
         
         self._move(move_by)
      
-    def get_bounding_box(self) -> list:
+    def get_bounding_box(self, mag = None) -> list:
         """Get the bounding box of the cell.
 
             ```
@@ -627,8 +659,31 @@ class Cell:
         try:
             bounding = self._layer_stack["Bounding"].get_bounding_box()
         except:
-            print('Error:  No bounding box set for cell ' + self.name)
-            bounding = None
+            if mag and self.device and self.device.model:
+                # Query magic for the size of the cell
+                cellname = self.device.model
+                mag.magic_command('load ' + cellname)
+                mag.magic_command('select top cell')
+                bbox = mag.magic_command('box values').split()
+                bounding = [int(bbox[0]), int(bbox[1]), int(bbox[2]), int(bbox[3])]
+                # Also create the "Bounding" layer so this routine does not
+                # need to query magic on subsequent calls.
+                bounding_rect = Rectangle(bounding[0], bounding[1], bounding[2], bounding[3])
+                bounding_layer = MagicLayer("Bounding", Color((255,255,255)))
+                bounding_layer.add_rect(bounding_rect)
+                bounding_layer.dont_fill()
+                self._layer_stack["Bounding"] = bounding_layer
+
+            else:
+                print('Error:  No bounding box available for cell ' + self.name)
+                if not self.device:
+                    print('Reason:  No device exists for the cell.')
+                if self.device and not self.device.model:
+                    print('Reason:  No layout cell name exists for the cell.')
+                if not mag:
+                    print('Reason:  No magic process exists.')
+                bounding = None
+
         return bounding
     
     def collidates(self, cell : Cell) -> bool:

@@ -37,9 +37,9 @@ import numpy as np
 
 from PPO.Placement_PPO import Placement_PPO
 from Network.D2RL_Actor import D2RL_Actor
+from Magic.Magic import Magic
 
-
-def train(env : Placement, hyperparameters : dict, actor_model : str = '', critic_model : str = '', total_placements=200e6):
+def train(env : Placement, hyperparameters : dict, actor_model : str = '', critic_model : str = '', total_placements=200e6, magicproc : Magic = None):
     """Train a policy network to learn placing cells.
 
     Args:
@@ -65,4 +65,4 @@ def train(env : Placement, hyperparameters : dict, actor_model : str = '', criti
         print(f"Training from scratch.", flush=True)
 
     #learn to place
-    model.learn(total_placements=total_placements)
+    model.learn(total_placements=total_placements, magicproc=magicproc)

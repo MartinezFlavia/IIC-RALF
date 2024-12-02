@@ -1,16 +1,16 @@
 ** sch_path: /home/flavia/sky130_ef_ip__samplehold/xschem/sky130_ef_ip__samplehold.sch
-.subckt sky130_ef_ip__samplehold dvdd dvss hold vdd out in ena vss
+**.subckt sky130_ef_ip__samplehold dvdd dvss hold vdd out in ena vss
 *.PININFO vdd:I hold:I in:I vss:I out:O dvdd:I dvss:I ena:I
 XC1 holdval vss sky130_fd_pr__cap_mim_m3_1 W=5 L=5 m=48
 XC2 vss holdval sky130_fd_pr__cap_mim_m3_2 W=5 L=5 m=48
 x1 hold3v vss holdval net1 vdd balanced_switch
-x2 vdd out ena3v vss holdval dvss follower_amp
-x3 vdd net1 ena3v vss in dvss follower_amp
+x2 vdd out ena3v vss holdval follower_amp
+x3 vdd net1 ena3v vss in follower_amp
 x4 hold dvdd dvss dvss vdd vdd hold3v sky130_fd_sc_hvl__lsbuflv2hv_1
 XXD1 dvss hold sky130_fd_pr__diode_pw2nd_05v5 area=3.6e11 perim=2.4e6
 x5 ena dvdd dvss dvss vdd vdd ena3v sky130_fd_sc_hvl__lsbuflv2hv_1
 XXD2 dvss ena sky130_fd_pr__diode_pw2nd_05v5 area=3.6e11 perim=2.4e6
-.ends
+**.ends
 
 * expanding   symbol:  balanced_switch.sym # of pins=5
 ** sym_path: /home/flavia/sky130_ef_ip__samplehold/xschem/balanced_switch.sym
@@ -34,8 +34,8 @@ XXD1 vss hold sky130_fd_pr__diode_pw2nd_05v5 area=2.025e11 perim=1.8e6
 * expanding   symbol:  follower_amp.sym # of pins=6
 ** sym_path: /home/flavia/sky130_ef_ip__samplehold/xschem/follower_amp.sym
 ** sch_path: /home/flavia/sky130_ef_ip__samplehold/xschem/follower_amp.sch
-.subckt follower_amp vdd out ena vss in vsub
-*.PININFO in:I vdd:I vss:I out:O ena:I vsub:I
+.subckt follower_amp vdd out ena vss in
+*.PININFO in:I vdd:I vss:I out:O ena:I
 XM4 pdrv1 net1 vdd vdd sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=2 nf=2 m=1
 XM5 vdd net1 net1 vdd sky130_fd_pr__pfet_g5v0d10v5 L=0.5 W=2 nf=2 m=1
 XM10 vss nbias nbias vss sky130_fd_pr__nfet_g5v0d10v5 L=0.5 W=4 nf=4 m=1

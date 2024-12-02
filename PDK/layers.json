@@ -1,6 +1,6 @@
 {
 "ScaleFactor":10, 
-"device_layers":["pwell", "nwell","dnwell", "mimcap", "mimcapcontact"],
+"device_layers":["pwell", "nwell","dnwell", "mimcap", "mimcapcontact", "mimcap2", "mimcap2contact", "mvpsubdiffcont", "mvnsubdiffcont","psubdiffcont","nsubdiffcont","ndiffc","pdiffc","mvndiffc","mvpdiffc","polycont", "ndiodec", "pdiodec"],
 "layer_stack":["li","m1","m2","m3","m4","m5"],
 "via_stack":["mcon","via1","via2","via3","via4"],
 "aliases":{
@@ -10,7 +10,19 @@
     "m3" : ["met3", "metal3"],
     "m4" : ["met4", "metal4"],
     "m5" : ["met5", "metal5"],
-    "mimcapcontact" : ["mimcc"]
+    "mimcapcontact" : ["mimcc"],
+    "mimcap2contact" : ["mim2cc"],
+    "mvpsubdiffcont" : ["mvpsc"],
+    "mvnsubdiffcont" : ["mvnsc"],
+    "psubdiffcont" : ["psc"],
+    "nsubdiffcont" : ["nsc"],
+    "mvpdiffc" : ["mvpdcontact", "mvpdc"],
+    "mvndiffc" : ["mvndcontact", "mvndc"],
+    "pdiffc" : ["pdcontact", "pdc"],
+    "ndiffc" : ["ndcontact", "ndc"],
+    "polycont" : ["pc" ,"pcontact", "polycut", "polyc"],
+    "ndiodec" : ["ndic"],
+    "pdiodec" : ["pdic"]
 },
 "via_map":{
     "lim1": "mcon",
@@ -141,9 +153,87 @@
         "Space": 1200
     }
 ,
+"mimcap2":
+    {
+        "Width": 2000,
+        "Space": 1200
+    }
+,
 "mimcapcontact":
     {
         "Width": 2000,
         "Space": 1200
+    }
+,
+"mimcap2contact":
+    {
+        "Width": 2000,
+        "Space": 1200
+    }
+,
+"mvnsubdiffcont":
+    {
+        "Width": 170,
+        "Space": 200
+    }
+,
+"mvpsubdiffcont":
+    {
+        "Width": 170,
+        "Space": 200
+    }
+,
+"nsubdiffcont":
+    {
+        "Width": 170,
+        "Space": 200
+    }
+,
+"psubdiffcont":
+    {
+        "Width": 170,
+        "Space": 200
+    }
+,
+"mvndiffc":
+    {
+        "Width": 170,
+        "Space": 200
+    }
+,
+"mvpdiffc":
+    {
+        "Width": 170,
+        "Space": 200
+    }
+,
+"ndiffc":
+    {
+        "Width": 170,
+        "Space": 200
+    }
+,
+"pdiffc":
+    {
+        "Width": 170,
+        "Space": 200
+    }
+,
+"polycont":
+    {
+        "Width": 170,
+        "Space": 200
+    }
+,
+"ndiodec":
+    {
+        "Width": 170,
+        "Space": 200
+    }
+,
+"pdiodec":
+    {
+        "Width": 170,
+        "Space": 200
     }
 }

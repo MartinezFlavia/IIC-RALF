@@ -13,24 +13,24 @@
     ],
     ["MinNetWireWidth",
     {
-        "net" : "avss",
+        "net" : "vss",
         "min_width" : 28
     }
     ],
     ["MinNetWireWidth",
     {
-        "net" : "avdd18",
+        "net" : "vdd",
         "min_width" : 28
     }
     ],
     ["Ports",
     {
-	"nets" : ["avdd18", "avss", "dvdd", "dvss", "ena", "vbg", "vptat", "vbgsc", "vbgtg", "trim0", "trim1", "trim2", "trim3"]
+	"nets" : ["out", "dvdd", "dvss", "vdd", "vss", "in", "ena", "hold"]
     }
     ],
     ["PowerNets",
     {
-        "nets" : ["avdd18", "avss"]
+        "nets" : ["vdd", "vss"]
     }
     ]        
 ]

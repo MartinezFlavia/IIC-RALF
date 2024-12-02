@@ -99,7 +99,7 @@ def main(circuit_name):
 
     print("Starting the placement by training a RL-agent...")
     # Do the placement by training a RL-agent
-    do_bottom_up_placement(C, N_PLACEMENTS, N_PLACEMENTS_PER_ROLLOUT, use_weights=False, show_stats=SHOW_STATS)
+    do_bottom_up_placement(C, M, N_PLACEMENTS, N_PLACEMENTS_PER_ROLLOUT, use_weights=False, show_stats=SHOW_STATS)
     print("Placement completed.")
 
     print("Saving the placed circuit...")

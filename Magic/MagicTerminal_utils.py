@@ -176,6 +176,13 @@ def get_terminals_Fixed(cell : Cell, mag : Magic) -> MagicTerminal:
     terminals = generate_terminals(terminal_rects, terminal_layers, terminal_location, cell)
     return terminals
 
+def get_terminals_Diode(cell : Cell, mag : Magic) -> MagicTerminal:
+    mapping = []
+    # NOTE:  "A" and "C" for "anode" and "cathode" will need to be reversed
+    # for pdiodes.  But maybe it doesn't matter?
+    mapping.append(('D1', 'C'))
+    mapping.append(('D2', 'A'))
+    return generate_multi_device_terminals(cell, mag, mapping)
 
 def get_terminals_MOS(cell : Cell, mag : Magic) -> MagicTerminal:
     """Get the physical terminals of a MOS.
@@ -543,7 +550,7 @@ def get_terminals_DifferentialPair(cell : Cell, mag : Magic) -> dict[str, MagicT
     elif 'mvpmos' in cell._layer_stack:
         drain_source_rects = cell.get_overlapping_rectangles('mvpdiffc', 'mvpdiff')
         bulk_rects = cell.get_overlapping_rectangles('mvnsubdiffcont', 'locali')
-    elif 'mvnmos' in cell._layer_stack:
+    elif 'mvnmos' in cell._layer_stack or 'mvnnmos' in cell._layer_stack:
         drain_source_rects = cell.get_overlapping_rectangles('mvndiffc', 'mvndiff')
         bulk_rects = cell.get_overlapping_rectangles('mvpsubdiffcont', 'locali')
     else:
@@ -1154,7 +1161,11 @@ def generate_terminals(terminal_rects : dict[str, list[Rectangle]], terminal_lay
         assert isinstance(device, PrimitiveDevice), f"A physical terminal, can only be generated for a primitive device."
 
         #get the net which is connected to the terminal
-        net = cell.device.nets[device.terminal_nets[terminal].name]
+        try:
+            net = cell.device.nets[device.terminal_nets[terminal].name]
+        except KeyError:
+            print('Error:  Pin name ' + terminal + ' not found in device.terminal_nets.  The list of terminal names is:')
+            print(str(device.terminal_nets))
         
         #enlarge the rects, such they lay on the lambda grid
         rects = transform_rects_to_lambda(rects)

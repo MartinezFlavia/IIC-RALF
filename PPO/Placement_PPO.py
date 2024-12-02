@@ -58,6 +58,8 @@ from Network.GAT_Policy import GAT_Policy
 from Network.D2RL_Actor import D2RL_Actor
 from Network.D2RL_Critic import D2RL_Critic
 
+from Magic.Magic import Magic
+
 import matplotlib.pyplot as plt 
 
 import copy
@@ -124,7 +126,7 @@ class Placement_PPO:
 
     
     
-    def learn(self, total_placements):
+    def learn(self, total_placements, magicproc : Magic = None):
         """Learn to place.
         """
         print(f"Learning to place for {total_placements} placements.")
@@ -149,7 +151,7 @@ class Placement_PPO:
             start = time.time_ns()
             #roll-out the environment
             self.file_logger.debug(f"Rolling out the environment.")
-            batch_obs, batch_acts, batch_log_probs, batch_rts, batch_advantages, batch_placements = self.rollout() 
+            batch_obs, batch_acts, batch_log_probs, batch_rts, batch_advantages, batch_placements = self.rollout(magicproc = magicproc) 
 
             print(f"Rollout took: {(time.time_ns()-start)/1e6} ms")
             
@@ -266,7 +268,7 @@ class Placement_PPO:
         self.save_logs_to_csv()
         self.env.save_logs_to_csv()
 
-    def rollout(self):
+    def rollout(self, magicproc : Magic = None):
         """Rollout the environment.
 
         Returns:
@@ -296,7 +298,7 @@ class Placement_PPO:
 
             self.file_logger.debug(f"Rolling out placement {batch_placements}/{self.placements_per_batch}.")
             #Reset the environment
-            obs, info = self.env.reset()
+            obs, info = self.env.reset(magicproc=magicproc)
 
             done = False
 

@@ -24,6 +24,7 @@ from typing import TYPE_CHECKING
 from Magic.Cell import Cell
 from Magic.MagicLayer import MagicLayer, Rectangle, Color
 from Magic.MagicTerminal_utils import Net
+from Magic.Magic import Magic
 from SchematicCapture.Devices import Device, SubDevice
 from Magic.MagicTerminal import MagicTerminal, MagicPin
 import copy
@@ -33,7 +34,7 @@ class MacroCell(Cell):
         A MacroCell is a cell, which is build up by multiple sub-cells.
         The MacroCell encloses this sub-cells.
     """
-    def __init__(self, name : str, cells : list[Cell]):
+    def __init__(self, name : str, cells : list[Cell], mag : Magic):
         """Class to store a macro-cell composed of cells. 
 
         Args:
@@ -55,7 +56,7 @@ class MacroCell(Cell):
         #get the bounding layer of the MacroCells
         layers = self.get_cells_bound_layer()
 
-        super().__init__(name, layers)
+        super().__init__(name, layers, mag)
 
     @property
     def cells(self):
@@ -96,7 +97,7 @@ class MacroCell(Cell):
         assert isinstance(device, SubDevice)
         self._device = device
 
-    def add_terminals(self):
+    def add_terminals(self, mag : Magic):
         """Add terminals to the macro-cell, from the internal cells terminals.
         """
         #get the terminal nets of the macros SubDevice.

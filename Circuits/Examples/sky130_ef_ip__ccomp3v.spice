@@ -3,7 +3,7 @@
 *.PININFO VDD:I VOUT:O VSS:I VINP:I VINM:I DVDD:I
 x1 VDD VBP VBN VSS VINP VOUT VINM DVDD comparator_core
 x2 VDD VSS VBP VBN comparator_bias
-.ends
+**.ends
 
 * expanding   symbol:  comparator_core.sym # of pins=8
 ** sym_path: /home/tim/gits/cheetah_v3_analog/dependencies/sky130_ef_ip__ccomp3v/xschem/comparator_core.sym

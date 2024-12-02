@@ -88,6 +88,16 @@ class MagicParser:
             if l.startswith("magscale"):
                 splitted = l.split()
                 self._magscale = int(splitted[2])
+            elif l.startswith("use"):
+                # Ignore use except read the "box" line and incorporate
+                # it into the cell's bounding box.
+                n += 3
+                if "Bounding" in layers:
+                    layer = layers["Bounding"]
+                else:
+                    layer = MagicLayer("Bounding", Color((255,255,255)))
+                rect = self.get_use_rect(lines[n])
+                layer.add_rect(rect)
 
             #if a new layer were defined
             lname = MagicParser.get_layer(l)
@@ -228,6 +238,34 @@ class MagicParser:
                             int(l[3])/self._magscale, 
                             int(l[4])/self._magscale,
                             int(l[5])/self._magscale)
+        else:
+            return None
+        
+    def get_use_rect(self, line : str) -> Rectangle|None:
+        """Get a rectangle from a .mag file line.
+            The line must have the following structure:
+            
+            box x_min y_min x_max y_max.
+
+            ------------(x_max, y_max)
+            |                   |
+            |                   |
+            |                   |
+        (x_min, y_min)----------
+
+
+        Args:
+            line (str): .mag file line
+
+        Returns:
+            Rectangle|None: Rectangle if the line starts with 'box', else None.
+        """
+        if line.startswith("box"):
+            l = line.split()
+            return Rectangle(int(l[1])/self._magscale,
+                            int(l[2])/self._magscale, 
+                            int(l[3])/self._magscale,
+                            int(l[4])/self._magscale)
         else:
             return None
         

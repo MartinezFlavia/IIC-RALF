@@ -21,6 +21,7 @@
 
 from __future__ import annotations
 from Magic.Cell import Cell
+from Magic.Magic import Magic
 from Magic.MacroCell import MacroCell
 from typing import List
 import numpy as np
@@ -38,7 +39,7 @@ logger = logging.getLogger(__name__)
 from prettytable import PrettyTable
 import time
 
-def do_placement(circ : Circuit, name :str, n_placements : int, placements_per_rollout = 100, use_weights = False, show_stats = True):
+def do_placement(circ : Circuit, mag : Magic, name :str, n_placements : int, placements_per_rollout = 100, use_weights = False, show_stats = True):
     """Performs the placement of circuit <circ>.
 
     Args:
@@ -69,7 +70,13 @@ def do_placement(circ : Circuit, name :str, n_placements : int, placements_per_r
         assert isinstance(d, Device)
 
         cell = d.cell
-        side_length += max(cell.width, cell.height)
+        bbox = cell.get_bounding_box(mag)
+        if bbox:
+            width = bbox[2] - bbox[0]
+            height = bbox[3] - bbox[1]
+            side_length += max(width, height)
+        else:
+            side_length += max(cell.width, cell.height)
     side_length = int(side_length)
     
     print(f"Doing placement {name} of circuit {circ.name} for {n_rollouts} rollouts.")
@@ -101,7 +108,7 @@ def do_placement(circ : Circuit, name :str, n_placements : int, placements_per_r
     critic_model = 'Network/Weights/ppo_critic.pth' if use_weights else ''
     
     #train the RL agent
-    train(env=env, hyperparameters=hyperparameters, actor_model=actor_model, critic_model=critic_model, total_placements=total_placements)
+    train(env=env, hyperparameters=hyperparameters, actor_model=actor_model, critic_model=critic_model, total_placements=total_placements, magicproc=mag)
 
     #get the best placement
     best_rew = env.best_reward
@@ -159,7 +166,7 @@ def do_placement(circ : Circuit, name :str, n_placements : int, placements_per_r
 
     return best_placement
 
-def do_bottom_up_placement(circ : Circuit, n_placements : int, placements_per_rollout : int = 100, use_weights = False, show_stats=True):
+def do_bottom_up_placement(circ : Circuit, mag : Magic, n_placements : int, placements_per_rollout : int = 100, use_weights = False, show_stats=True):
     """Perform a placement in a bottom-up fashion on circuit <circ>.
 
     Args:
@@ -185,7 +192,7 @@ def do_bottom_up_placement(circ : Circuit, n_placements : int, placements_per_ro
         else:
             #place circuit
             if len(c.devices)>1:
-                best_circuit = do_placement(c, c.name, n_placements=n_placements, placements_per_rollout=placements_per_rollout, use_weights=use_weights, show_stats=show_stats)
+                best_circuit = do_placement(c, mag, c.name, n_placements=n_placements, placements_per_rollout=placements_per_rollout, use_weights=use_weights, show_stats=show_stats)
                 circ_dict[c.name] = copy.deepcopy(best_circuit)
                 logger.debug(f"Best-circuit: type {type(best_circuit)}, id {id(best_circuit)}")
             else:
@@ -212,10 +219,10 @@ def do_bottom_up_placement(circ : Circuit, n_placements : int, placements_per_ro
             logger.debug(f"Adding macrocell to subcircuit {c.name}.")
             cells = [circ.cell for circ in list(c.devices.values())]
             logger.debug(f"Adding cells: {[(c._name, id(c))  for c in cells]}")
-            macro = MacroCell(c.name, cells)
+            macro = MacroCell(c.name, cells, mag)
             logger.debug(f"Created macrocell {macro._name}, type {type(macro)}, id {id(macro)}.")
 
-            c.sub_device.set_cell(macro)
+            c.sub_device.set_cell(macro, mag)
 
 
     for (t, c) in reversed(placement_order):

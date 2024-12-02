@@ -26,6 +26,7 @@ if TYPE_CHECKING:
 from SchematicCapture.Circuit import Circuit
 from Magic.DRC import DRC_collidates, DRC_collidates_all, DRC_magic_check_cell, DRC_magic_all
 from Magic.utils import place_circuit
+from Magic.Magic import Magic
 from Environment.cell_sliding import cell_slide3
 
 import numpy as np
@@ -172,11 +173,11 @@ class Placement:
         """
         return self._n_devices
     
-    def init_Circuit(self):
+    def init_Circuit(self, magicproc : Magic = None):
         """Initialize the circuit for the placement.
         """
         for (d_name, d) in self._circuit._devices.items():
-            d.cell.reset_place()
+            d.cell.reset_place(magicproc = magicproc)
     
     def HPWL(self) -> float:
         """Get the HPWL of the actual placement.
@@ -261,20 +262,29 @@ class Placement:
             #setup the data from the circuit
             graph = self._circuit.feature_graph
             data = from_networkx(graph)
-            data.x = data.x.to(dtype=torch.float32)
-            data.edge_attr = data.edge_attr.to(dtype=torch.float32)
+            # XXX---to() is failing with AttributeError;  data.x appears to
+            # be a list and not a tensor (??)
+            # . . . or try data.x = data.x.float()?
+            try:
+                data.x = data.x.to(dtype=torch.float32)
+            except:
+                pass
+            try:
+                data.edge_attr = data.edge_attr.to(dtype=torch.float32)
+            except:
+                pass
             self._data = data
         
         return data
     
-    def reset(self) -> tuple[torch_geometric.data.Data, str]:
+    def reset(self, magicproc : Magic = None) -> tuple[torch_geometric.data.Data, str]:
         """Reset the placement environment.
 
         Returns:
             tuple[torch_geometric.data.Data, str]: Data of the environment, Name of the device which will be placed next
         """
         #initialize the circuit
-        self.init_Circuit()
+        self.init_Circuit(magicproc = magicproc)
         
         #reset the placed cells
         self._placed_cells = []

@@ -94,7 +94,7 @@ def main(CIRCUIT_NAME):
 
     #do the placement per simulated annealing
     #and store images of the placement under "Images"
-    do_bottom_up_placement(die, fig_path="Images", simanneal_minutes=SIM_ANNEAL_MIN, simanneal_steps=SIM_ANNEAL_STEPS,
+    do_bottom_up_placement(die, M, fig_path="Images", simanneal_minutes=SIM_ANNEAL_MIN, simanneal_steps=SIM_ANNEAL_STEPS,
                            n_placements=N_PLACEMENTS, show_stats=SHOW_STATS)
 
     #save the placed circuit

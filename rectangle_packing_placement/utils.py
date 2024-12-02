@@ -34,6 +34,7 @@ import copy
 
 from SchematicCapture.Circuit import SubCircuit
 from Magic.MacroCell import MacroCell
+from Magic.Magic import Magic
 from SchematicCapture.Devices import SubDevice
 
 from rectangle_packing_solver.cell_sliding import cell_slide3
@@ -113,7 +114,7 @@ def do_placement(circuit : Circuit, width_limit = None, height_limit = None, sim
 
     return solution.problem.circuit
 
-def do_bottom_up_placement(die : MagicDie, simanneal_minutes = 0.1, simanneal_steps = 200, n_placements = 100, fig_path = None, show_stats=True) -> Circuit:
+def do_bottom_up_placement(die : MagicDie, mag : Magic, simanneal_minutes = 0.1, simanneal_steps = 200, n_placements = 100, fig_path = None, show_stats=True) -> Circuit:
     """ Perform a placement in a bottom-up fashion on the circuit defined in <die>.
 
     Args:
@@ -168,8 +169,8 @@ def do_bottom_up_placement(die : MagicDie, simanneal_minutes = 0.1, simanneal_st
         if type(c) is SubCircuit:
             #if circuit was a sub-circuit, make a macro cell out of the placed cells
             cells = [circ.cell for circ in list(c.devices.values())]
-            macro = MacroCell(c.name, cells)
-            c.sub_device.set_cell(macro)
+            macro = MacroCell(c.name, cells, mag)
+            c.sub_device.set_cell(macro, mag)
 
 
     #placement done
