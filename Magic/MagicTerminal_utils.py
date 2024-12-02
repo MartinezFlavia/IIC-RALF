@@ -557,7 +557,6 @@ def get_terminals_DifferentialPair(cell : Cell, mag : Magic) -> dict[str, MagicT
         # This will fail.  Need to fall back on a generic method (multi?).
         pass
     
-    
     #merge and sort the rectangles
     if rot == 0 or rot==180:
         #drain_source_rects = merge_rects(drain_source_rects, direction=1)
@@ -709,7 +708,7 @@ def get_terminals_DifferentialLoad(cell : Cell, mag : Magic) -> dict[str, MagicT
     elif 'mvpmos' in cell._layer_stack:
         drain_source_rects = cell.get_overlapping_rectangles('mvpdiffc', 'mvpdiff')
         bulk_rects = cell.get_overlapping_rectangles('mvnsubdiffcont', 'locali')
-    elif 'mvnmos' in cell._layer_stack:
+    elif 'mvnmos' in cell._layer_stack or 'mvnnmos' in cell._layer_stack:
         drain_source_rects = cell.get_overlapping_rectangles('mvndiffc', 'mvndiff')
         bulk_rects = cell.get_overlapping_rectangles('mvpsubdiffcont', 'locali')
     else:
@@ -894,7 +893,7 @@ def get_terminals_CrossCoupledPair(cell : Cell, mag : Magic) -> dict[str,MagicTe
     elif 'mvpmos' in cell._layer_stack:
         drain_source_rects = cell.get_overlapping_rectangles('mvpdiffc', 'mvpdiff')
         bulk_rects = cell.get_overlapping_rectangles('mvnsubdiffcont', 'locali')
-    elif 'nmos' in cell._layer_stack:
+    elif 'mvnmos' in cell._layer_stack or 'mvnnmos' in cell._layer_stack:
         drain_source_rects = cell.get_overlapping_rectangles('mvndiffc', 'mvndiff')
         bulk_rects = cell.get_overlapping_rectangles('mvpsubdiffcont', 'locali')
     else:
