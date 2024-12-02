@@ -252,6 +252,8 @@ def get_terminals_MOS(cell : Cell, mag : Magic) -> MagicTerminal:
                 ltype = layer[lpos - 3: lpos]
             elif lpos == 4 and layer[lpos - 4: lpos - 2] == 'mv':
                 ltype = layer[lpos - 4: lpos - 1]
+            elif lpos == 2 and layer[0:2] == 'nn':
+                ltype = 'mvn'
             break
 
     if ltype:
@@ -550,7 +552,7 @@ def get_terminals_DifferentialPair(cell : Cell, mag : Magic) -> dict[str, MagicT
     elif 'mvpmos' in cell._layer_stack:
         drain_source_rects = cell.get_overlapping_rectangles('mvpdiffc', 'mvpdiff')
         bulk_rects = cell.get_overlapping_rectangles('mvnsubdiffcont', 'locali')
-    elif 'mvnmos' in cell._layer_stack or 'mvnnmos' in cell._layer_stack:
+    elif 'mvnmos' in cell._layer_stack or 'mvnnmos' in cell._layer_stack or 'nnmos' in cell._layer_stack:
         drain_source_rects = cell.get_overlapping_rectangles('mvndiffc', 'mvndiff')
         bulk_rects = cell.get_overlapping_rectangles('mvpsubdiffcont', 'locali')
     else:
@@ -708,7 +710,7 @@ def get_terminals_DifferentialLoad(cell : Cell, mag : Magic) -> dict[str, MagicT
     elif 'mvpmos' in cell._layer_stack:
         drain_source_rects = cell.get_overlapping_rectangles('mvpdiffc', 'mvpdiff')
         bulk_rects = cell.get_overlapping_rectangles('mvnsubdiffcont', 'locali')
-    elif 'mvnmos' in cell._layer_stack or 'mvnnmos' in cell._layer_stack:
+    elif 'mvnmos' in cell._layer_stack or 'mvnnmos' in cell._layer_stack or 'nnmos' in cell._layer_stack:
         drain_source_rects = cell.get_overlapping_rectangles('mvndiffc', 'mvndiff')
         bulk_rects = cell.get_overlapping_rectangles('mvpsubdiffcont', 'locali')
     else:
@@ -796,7 +798,7 @@ def get_terminals_DifferentialLoad(cell : Cell, mag : Magic) -> dict[str, MagicT
         nf = device.parameters['nf']
         if (nf %2)==0: #if the number of fingers is even
             if (nf//2)%2==0: #if a drain-node is at the center of the device
-                drain_rects, source_rects = source_rects, drain_rects #change drain and source
+                drain2_rects, source2_rects = source2_rects, drain2_rects #change drain and source
     
     gates_in_middle = False #Holds if the gates of the device are in the middle
     if 'botc' in device.cell_parameters:
@@ -893,7 +895,7 @@ def get_terminals_CrossCoupledPair(cell : Cell, mag : Magic) -> dict[str,MagicTe
     elif 'mvpmos' in cell._layer_stack:
         drain_source_rects = cell.get_overlapping_rectangles('mvpdiffc', 'mvpdiff')
         bulk_rects = cell.get_overlapping_rectangles('mvnsubdiffcont', 'locali')
-    elif 'mvnmos' in cell._layer_stack or 'mvnnmos' in cell._layer_stack:
+    elif 'mvnmos' in cell._layer_stack or 'mvnnmos' in cell._layer_stack or 'nnmos' in cell._layer_stack:
         drain_source_rects = cell.get_overlapping_rectangles('mvndiffc', 'mvndiff')
         bulk_rects = cell.get_overlapping_rectangles('mvpsubdiffcont', 'locali')
     else:
