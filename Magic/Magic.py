@@ -602,23 +602,25 @@ class Magic:
         commands.append("load workspace -silent -quiet")
 
         for (d_name, d) in circ.devices.items():
+            # Make sure that any arrayed devices have brackets escaped
+            d_safename = d_name.replace('[','\[').replace(']','\]')
             if type(d) == Fixed:
                 # For now, handle fixed-layout devices by creating a new cell with the expected
                 # name that instantiates the fixed-layout cell.
-                instname = d.name
-                modelname = d.model
+                instname = d.name.replace('[','\[').replace(']','\]')
+                modelname = d.model.replace('[','\[').replace(']','\]')
 
                 print('Diagnostic:  Device instance = ' + str(instname) + '; Device model = ' + str(modelname))
-                commands.append(f"load {d_name} -silent -quiet")
+                commands.append(f"load {d_safename} -silent -quiet")
                 commands.append("box 0 0 0 0")
                 commands.append(f"getcell {modelname}")
-                commands.append(f"writeall force {d_name}")
+                commands.append(f"writeall force {d_safename}")
                 commands.append(f"load workspace")
 
 
             if type(d) != SubDevice:
-                instname = d.name
-                modelname = d.model
+                instname = d.name.replace('[','\[').replace(']','\]')
+                modelname = d.model.replace('[','\[').replace(']','\]')
 
                 # XXX WIP XXX:  Code in MagicTerminal_utils.py counts gates by contact, not by gate.
                 # This requires that the bottom gate contact be removed.  To do:  Use calls to magic
@@ -650,17 +652,17 @@ class Magic:
                 pstring = '-spice ' + ' '.join(plist)
                 print('Diagnostic:  Device instance = ' + str(instname) + '; Device model = ' + str(modelname))
                 commands.append(f"magic::gencell ${{PDKNAMESPACE}}::{modelname} {instname} {pstring}")
-                # commands.append(f"load {d_name} -silent -quiet")
+                # commands.append(f"load {d_safename} -silent -quiet")
                 # commands.append("box 0 0 0 0")
                 # commands.append(Magic.magic_gen_device(d))
-                # commands.append(f"save {d_name}")
+                # commands.append(f"save {d_safename}")
                 # XXX WIP XXX
                 # For now, mimic the original behavior by saving the device.  Note that the original behavior
                 # renames the device, which is not supported by the PDK code, so the device must be manually
                 # renamed.
                 commands.append("set oldcell [cellname list self]")
-                commands.append(f"cellname rename $oldcell {d_name}")
-                commands.append(f"writeall force {d_name}")
+                commands.append(f"cellname rename $oldcell {d_safename}")
+                commands.append(f"writeall force {d_safename}")
             
         return commands
     

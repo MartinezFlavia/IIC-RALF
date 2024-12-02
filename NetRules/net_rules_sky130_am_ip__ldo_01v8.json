@@ -1,36 +1,36 @@
 [    
     ["MinNetWireWidth",
     {
-        "net" : "dvdd",
+        "net" : "DVDD",
         "min_width" : 28
     }
     ],
     ["MinNetWireWidth",
     {
-        "net" : "dvss",
+        "net" : "DVSS",
         "min_width" : 28
     }
     ],
     ["MinNetWireWidth",
     {
-        "net" : "avss",
+        "net" : "AVSS",
         "min_width" : 28
     }
     ],
     ["MinNetWireWidth",
     {
-        "net" : "avdd",
+        "net" : "AVDD",
         "min_width" : 28
     }
     ],
     ["Ports",
     {
-	"nets" : ["avdd", "avss", "dvdd", "dvss", "ibias", "ena", "standby", "dout", "xin", "xout"]
+	"nets" : ["AVDD", "VOUT", "AVSS", "ENA", "VREF_EXT", "SEL_EXT", "DVDD", "DVSS"]
     }
     ],
     ["PowerNets",
     {
-        "nets" : ["avdd", "avss"]
+        "nets" : ["AVDD", "AVSS"]
     }
     ]        
 ]

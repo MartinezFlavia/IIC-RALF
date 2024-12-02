@@ -67,9 +67,9 @@ def generate_multi_device_terminals(cell : Cell, mag : Magic, mapping : list) ->
         porttype = mag.magic_command('goto ' + portname)
         portbox = mag.magic_command('box values')
    
-        print('Diagnostic:  portname is ' + portname)
-        print('Diagnostic:  porttype is ' + porttype)
-        print('Diagnostic:  portbox is ' + portbox)
+        # print('Diagnostic:  portname is ' + portname)
+        # print('Diagnostic:  porttype is ' + porttype)
+        # print('Diagnostic:  portbox is ' + portbox)
 
         # Does this port map?
         mapname = None
