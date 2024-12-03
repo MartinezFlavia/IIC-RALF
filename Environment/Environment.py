@@ -262,17 +262,12 @@ class Placement:
             #setup the data from the circuit
             graph = self._circuit.feature_graph
             data = from_networkx(graph)
-            # XXX---to() is failing with AttributeError;  data.x appears to
-            # be a list and not a tensor (??)
-            # . . . or try data.x = data.x.float()?
             try:
                 data.x = data.x.to(dtype=torch.float32)
             except:
-                pass
-            try:
-                data.edge_attr = data.edge_attr.to(dtype=torch.float32)
-            except:
-                pass
+                print('Error in tensor.')
+                print('Graph is: ' + str(graph))
+            data.edge_attr = data.edge_attr.to(dtype=torch.float32)
             self._data = data
         
         return data

@@ -759,13 +759,17 @@ class Diode(PrimitiveDevice):
         self.add_feature("model", SUPPORTED_DEVICES[self._model])
 
         #set the parameters of the device
+        # self._parameters = {"area":1, "pj":1, "m":1}
         self._parameters = {"area":1, "pj":1, "m":1}
         self._set_params()
 
         #add features from the parameters
-        self.add_feature("area", self._parameters["area"])
-        self.add_feature("pj", self._parameters["pj"])
+        # NOTE:  Changing diode area and perimeter to "normal-looking" units.
+        self.add_feature("area", self._parameters["area"] * 1e-12)
+        self.add_feature("pj", self._parameters["pj"] * 1e-6)
         self.add_feature("m", self._parameters["m"])
+        # Pad feature set out to 4 parameters
+        self.add_feature("xxx", 0)
 
     def _setup_terminals(self):
         """ Setup the terminals of the device.
@@ -862,6 +866,11 @@ class Bipolar(PrimitiveDevice):
 
         #add parameters as features
         self.add_feature("m", self._parameters["m"])
+
+        # Pad feature set out to 4 parameters
+        self.add_feature("xxx", 0)
+        self.add_feature("yyy", 0)
+        self.add_feature("zzz", 0)
 
     def _setup_terminals(self):
         """ Setup the terminals of the BJT.
@@ -982,6 +991,11 @@ class Fixed(PrimitiveDevice):
         #add features - a sub-device has no features other than multiplicity
         self.add_feature("model", -1)
         self.add_feature("m", 1)
+
+        # Pad feature set out to 4 parameters
+        self.add_feature("xxx", 0)
+        self.add_feature("yyy", 0)
+        self.add_feature("zzz", 0)
 
     def _setup_terminals(self):
         """Set up the terminals of the device.

@@ -160,20 +160,24 @@ class Circuit:
         Returns:
             nx.MultiGraph: Circuit graph with features.
         """
-        #setup a list of nodes, with node features
+        #set up a list of nodes, with node features
         node_list = []
         for n, n_attr in self.graph.nodes(data=True):
             node_list.append((n, {"x": n_attr['Device'].feature_list, "name": n_attr['Device'].name}))
         
-        #setup a list of edges, with edge features
+        #set up a list of edges, with edge features
         edge_list = []
         for u, v, e_attr in self.graph.edges(data=True):
             edge_list.append((u,v, {"edge_attr" : e_attr["Net"].feature_list_between(self.devices[u], self.devices[v]), "edge_name": e_attr["Net"].name}))
 
-        #setup a graph induced from the nodes and edges
+        #set up a graph induced from the nodes and edges
         g = nx.MultiGraph()
         g.add_nodes_from(node_list)
         g.add_edges_from(edge_list)
+
+        # Diagnostic
+        print('Diagnostic:  node_list is ' + str(node_list))
+
         return g
     
     @property

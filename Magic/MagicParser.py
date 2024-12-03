@@ -231,13 +231,15 @@ class MagicParser:
             else None.
         """
         if line.startswith("rlabel") or line.startswith("flabel"):
-            # NOTE:  This works for "rlabel", need to handle "flabel" differently,
-            # because there are additional arguments in the line.
             l = line.split()
-            return Rectangle(int(l[2])/self._magscale,
-                            int(l[3])/self._magscale, 
-                            int(l[4])/self._magscale,
-                            int(l[5])/self._magscale)
+            if l[2] == 's':
+                lstart = 3
+            else:
+                lstart = 2
+            return Rectangle(int(l[lstart])/self._magscale,
+                            int(l[lstart + 1])/self._magscale, 
+                            int(l[lstart + 2])/self._magscale,
+                            int(l[lstart + 3])/self._magscale)
         else:
             return None
         

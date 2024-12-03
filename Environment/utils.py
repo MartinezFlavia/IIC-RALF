@@ -207,7 +207,7 @@ def do_bottom_up_placement(circ : Circuit, mag : Magic, n_placements : int, plac
 
             logger.debug(f"Updating cell of device {k}.")
             logger.debug(f"Best-location {v.cell.center_point}, Best-rotation {v.cell.rotation}.")
-            circuit_mapped[k].cell.reset_place()
+            circuit_mapped[k].cell.reset_place(magicproc=mag)
             circuit_mapped[k].cell.place(v.cell.center_point, v.cell.rotation)
             logger.debug(f"Updated cell to location {circuit_mapped[k].cell.center_point} and rotation {circuit_mapped[k].cell.rotation}.")
             

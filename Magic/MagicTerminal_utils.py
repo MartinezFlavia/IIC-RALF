@@ -184,6 +184,14 @@ def get_terminals_Diode(cell : Cell, mag : Magic) -> MagicTerminal:
     mapping.append(('D2', 'A'))
     return generate_multi_device_terminals(cell, mag, mapping)
 
+def get_terminals_Bipolar(cell : Cell, mag : Magic) -> MagicTerminal:
+    # Mapping should be okay as-is?  Or not? 
+    mapping = []
+    mapping.append(('Emitter', 'E'))
+    mapping.append(('Base', 'B'))
+    mapping.append(('Collector', 'C'))
+    return generate_multi_device_terminals(cell, mag, mapping)
+
 def get_terminals_MOS(cell : Cell, mag : Magic) -> MagicTerminal:
     """Get the physical terminals of a MOS.
 

@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     from SchematicCapture.Primitives import DifferentialPair
     from SchematicCapture.Devices import MOS, ThreeTermResistor, Capacitor
 
-from SchematicCapture.Devices import SubDevice, PrimitiveDevice, Fixed
+from SchematicCapture.Devices import SubDevice, PrimitiveDevice, Fixed, Bipolar, Diode
 
 import pexpect
 import os
@@ -551,6 +551,7 @@ class Magic:
             list[str]: Commands to place devices.
         """
         commands = []
+        commands.append(f"load {name} -silent")
         commands.append(f"save {path}{name}")
 
         #for (d_name, d) in self._circuit.devices.items():
@@ -610,7 +611,7 @@ class Magic:
                 instname = d.name.replace('[','\[').replace(']','\]')
                 modelname = d.model.replace('[','\[').replace(']','\]')
 
-                print('Diagnostic:  Device instance = ' + str(instname) + '; Device model = ' + str(modelname))
+                print('Diagnostic:  Device instance = ' + str(instname) + '; Device model = ' + str(modelname) + '; Cell name =' + str(d_safename))
                 commands.append(f"load {d_safename} -silent -quiet")
                 commands.append("box 0 0 0 0")
                 commands.append(f"getcell {modelname}")
@@ -661,8 +662,9 @@ class Magic:
                 # renames the device, which is not supported by the PDK code, so the device must be manually
                 # renamed.
                 commands.append("set oldcell [cellname list self]")
-                commands.append(f"cellname rename $oldcell {d_safename}")
-                commands.append(f"writeall force {d_safename}")
+                commands.append("set rostatus [cellname list writeable $oldcell]")
+                # This is awkward. . .  Need a better solution?
+                commands.append('if {$rostatus == "read-only"} {set fpath [cellname list filepath $oldcell]; file copy ${fpath}.mag ' + d_safename + '.mag} else {cellname rename $oldcell ' + d_safename + ' ; writeall force ' + d_safename + '}')
             
         return commands
     
