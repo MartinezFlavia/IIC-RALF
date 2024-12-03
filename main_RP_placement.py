@@ -29,6 +29,7 @@ from Magic.utils import instantiate_circuit, add_cells
 from rectangle_packing_placement.utils import do_bottom_up_placement
 from SchematicCapture.RString import include_RStrings_hierarchical
 from Magic.MagicDie import MagicDie
+from Magic.Magic import Magic
 
 from rectangle_packing_placement.utils import do_bottom_up_placement
 
@@ -77,30 +78,45 @@ def main(CIRCUIT_NAME):
     print("Setting up the circuit...")
     # Set up the circuit
     C = setup_circuit(CIRCUIT_FILE_NAME, M, CIRCUIT_NAME, [], NET_RULES_FILE)
+    print(f"Circuit setup completed: {C}")
+    M.set_circuit(C)
     
+    print("Including primitive compositions into the circuit...")
     #include primitive compositions into the circuit
-    include_primitives_hierarchical(C)
-    include_RStrings_hierarchical(C)
+    include_primitives_hierarchical(C, M)
+    include_RStrings_hierarchical(C, M)
+    print("Primitive compositions included.")
 
     #instantiate the circuit cells in magic
     if INSTANTIATE_CELLS_IN_MAGIC:
+        print("Instantiating the circuit cells in Magic...")
         instantiate_circuit(C, M, "Magic/Devices")
+        print("Circuit cells instantiated in Magic.")
 
     #add the cells to the devices
     add_cells(C, M, "Magic/Devices")
+    print("Cells added to the devices.")
 
-    #define a die for the circuit
+    print("Defining a die for the circuit...")
+    # Define a die for the circuit
     die = MagicDie(circuit=C, def_file=DEF_FILE)
+    print("Die defined.")
 
-    #do the placement per simulated annealing
-    #and store images of the placement under "Images"
-    do_bottom_up_placement(die, M, fig_path="Images", simanneal_minutes=SIM_ANNEAL_MIN, simanneal_steps=SIM_ANNEAL_STEPS,
-                           n_placements=N_PLACEMENTS, show_stats=SHOW_STATS)
+    print("Starting the placement by training a RL-agent...")
+    # Do the placement per simulated annealing
+    # and store images of the placement under "Images"
+    do_bottom_up_placement(die, M, fig_path="Images",
+		simanneal_minutes=SIM_ANNEAL_MIN,
+		simanneal_steps=SIM_ANNEAL_STEPS,
+		n_placements=N_PLACEMENTS, show_stats=SHOW_STATS)
 
-    #save the placed circuit
+    print("Saving the placed circuit...")
+    # Save the placed circuit
     file = open(f"PlacementCircuits/{CIRCUIT_NAME}_placement.pkl", 'wb')
     pickle.dump(die, file)
     file.close()
+    print("Placed circuit saved.")
+
     
 if __name__=='__main__':
     main(None)
