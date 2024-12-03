@@ -52,28 +52,28 @@ XC4 net2 avss sky130_fd_pr__cap_mim_m3_1 W=3 L=6 m=1
 XC5 net13 avss sky130_fd_pr__cap_mim_m3_1 W=3 L=6 m=1
 XM43 dout0 ena dvdd dvdd sky130_fd_pr__pfet_01v8 L=0.15 W=0.42 nf=1 m=1
 XM35 dout enb dvss dvss sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 nf=1 m=1
-XR2[21] avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
-XR2[20] avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
-XR2[19] avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
-XR2[18] avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
-XR2[17] avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
-XR2[16] avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
-XR2[15] avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
-XR2[14] avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
-XR2[13] avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
-XR2[12] avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
-XR2[11] avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
-XR2[10] avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
-XR2[9] avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
-XR2[8] avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
-XR2[7] avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
-XR2[6] avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
-XR2[5] avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
-XR2[4] avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
-XR2[3] avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
-XR2[2] avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
-XR2[1] avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
-XR2[0] avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
+XR2_21 avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
+XR2_20 avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
+XR2_19 avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
+XR2_18 avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
+XR2_17 avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
+XR2_16 avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
+XR2_15 avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
+XR2_14 avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
+XR2_13 avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
+XR2_12 avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
+XR2_11 avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
+XR2_10 avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
+XR2_9 avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
+XR2_8 avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
+XR2_7 avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
+XR2_6 avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
+XR2_5 avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
+XR2_4 avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
+XR2_3 avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
+XR2_2 avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
+XR2_1 avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
+XR2_0 avdd avdd avss sky130_fd_pr__res_xhigh_po_0p35 L=11 mult=1 m=1
 ** .ends
 
 * expanding   symbol:  rc_osc_level_shifter.sym # of pins=8

@@ -382,7 +382,7 @@ def get_terminals_ThreeTermResistor(cell : Cell, mag : Magic) -> dict[str, Magic
     rot = cell.rotation
     assert rot==0, f"Rotation different, than 0deg detected!"
     
-    if device.parameters['m'] > 1:
+    if device.parameters['m'] or device.parameters['nx'] > 1:
         mapping = []
         mapping.append(('R1', 'D'))
         mapping.append(('R2', 'S'))
@@ -457,7 +457,7 @@ def get_terminals_Capacitor(cell : Cell, mag : Magic) -> dict[str, MagicTerminal
     # with value M, this is one device, all top and bottom plate ports
     # are to be connected, and map all C1_* to "D" and all C2_* to "S".
 
-    if device.parameters['m'] > 1:
+    if device.parameters['m'] > 1 :
         mapping = []
         mapping.append(('C1', 'D'))
         mapping.append(('C2', 'S'))

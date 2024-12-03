@@ -18,6 +18,7 @@
 # ========================================================================
 
 from __future__ import annotations
+import math
 
 # Global variable to generate indexes for devices as they are discovered
 # This should really be a class variable.
@@ -607,16 +608,34 @@ class ThreeTermResistor(PrimitiveDevice):
 
         #set the parameters which shall be stored
         # ToDo: Generalize for other widths  
-        self._parameters = {"L":None, "mult":1, "m":1, "W": 0.35}
+        self._parameters = {"L":None, "nx":1, "m":1, "W": 0.35, "snake": 0}
         self._set_params()
-        
-        #add features from the parameters
-        # ToDo: Generalize for other widths 
-        self.add_feature("L", self._parameters["L"])
-        self.add_feature("W", 0.35)
-        self.add_feature("m", self._parameters["m"])
-        self.add_feature("nf", 1)
 
+        # Up-front optimization:
+        # The entire resistor's aspect ratio is approximately (L / nx) by
+	# (2 * nx * W).  Increase nx until this ratio is less than 2.
+
+        if self._parameters["L"]:
+            l = self._parameters["L"]
+            w = self._parameters["W"]
+            nx = self._parameters["nx"]
+
+            ltot = l * nx
+            bnx = int(math.sqrt(ltot / 2 * w))
+            if bnx > 2 and bnx > nx:
+                nx = bnx
+                l = ltot / nx 
+
+            self._parameters["L"] = l
+            self._parameters["nx"] = nx
+            if ltot != l:
+                self._parameters["snake"] = 1
+        
+        # Add features from the parameters
+        self.add_feature("L", self._parameters["L"])
+        self.add_feature("W", self._parameters["W"])
+        self.add_feature("m", self._parameters["m"])
+        self.add_feature("nx", self._parameters["nx"])
     
     def _setup_terminals(self):
         """Setup the terminals of the device.
@@ -933,6 +952,26 @@ class MOS(PrimitiveDevice):
         self._parameters = {"L" : None, "W" : None, "nf" : 1, "mult" : 1,
                             "m" : 1, "ad" : None, "as" : None, "pd" : None, "ps" : None}
         self._set_params()
+        
+        # Up-front optimization:  Use nf before m, and trade off W for nf
+        if self._parameters["W"]:
+            nf = self._parameters["nf"]
+            w = self._parameters["W"]
+            m = self._parameters["m"]
+
+            w *= m
+            m = 1
+
+            while (w * nf) > 3000:
+                m *= 10
+                w /= 10
+
+            while (w / nf) > 15:
+                nf += 1
+
+            self._parameters["nf"] = nf
+            self._parameters["W"] = w
+            self._parameters["m"] = m
         
         #add parameters as features
         self.add_feature("L", self._parameters["L"])

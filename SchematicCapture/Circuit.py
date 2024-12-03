@@ -176,7 +176,7 @@ class Circuit:
         g.add_edges_from(edge_list)
 
         # Diagnostic
-        print('Diagnostic:  node_list is ' + str(node_list))
+        # print('Diagnostic:  node_list is ' + str(node_list))
 
         return g
     
